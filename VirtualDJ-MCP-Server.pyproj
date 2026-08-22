@@ -30,6 +30,8 @@
   <ItemGroup>
     <Compile Include=".\src\main.py" />
     <Compile Include="src\config.py" />
+    <Compile Include="src\virtualdj_client.py" />
+    <Compile Include="src\virtualdj_mcp_server.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
