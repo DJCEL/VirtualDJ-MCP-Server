@@ -1,5 +1,6 @@
 import sys
 import asyncio
+
 from rich.console import Console
 console = Console(file=sys.stderr)
 
@@ -12,8 +13,9 @@ def main():
     # Initialize VirtualDJ client
     vdj_client = VirtualDJClient()
 
+    vdj_client_connected = False
     vdj_client_connected = asyncio.run(vdj_client.is_running())
-    print("vdj_client connected:", vdj_client_connected)
+    console.print(f"VirtualDJ connected: {vdj_client_connected}")
     if (vdj_client_connected == False):
         sys.exit()
 
@@ -22,13 +24,12 @@ def main():
     try:
         run_mcp_server(vdj_client)
     except KeyboardInterrupt:
-        console.print("[yellow]Server shutdown requested[/yellow]")
+        console.print("Server shutdown requested")
     except Exception as e:
-        console.print(f"[red]Server error: {e}[/red]")
+        console.print(f"Server error: {e}")
         raise
     finally:
-        console.print("[green]VirtualDJ-MCP Server stopped[/green]")
+        console.print("VirtualDJ-MCP Server stopped")
 #------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     main()
-    #asyncio.run(main())

@@ -1,7 +1,7 @@
 import sys
 from fastmcp import FastMCP
-from rich.console import Console
 
+from rich.console import Console
 console = Console(file=sys.stderr)
 
 from starlette.requests import Request
