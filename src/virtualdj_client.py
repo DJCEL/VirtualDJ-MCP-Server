@@ -43,7 +43,7 @@ class VirtualDJClient:
             if process_name and "virtualdj" in process_name:
                 # Process running, check HTTP API
                 try:
-                    async with httpx.AsyncClient(timeout=2.0) as client:
+                    async with httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT) as client:
                         response = await client.get(vdj_script_url, headers=headers)
                         return response.status_code == 200
                     return True
@@ -65,16 +65,14 @@ class VirtualDJClient:
         """Send command via HTTP Network Control Plugin API"""
         endpoint = "query" if is_query else "execute"
         headers = self._get_headers()
-        vdj_script_url = f"{self.base_url}/{endpoint}"
+        vdj_script_url = f"{self.base_url}/{endpoint}?script={script}"
 
         try:
-            client = self._client or httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT)
-            close_after = self._client is None
-
-            try:
+            async with httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT) as client:
                 # Use POST for complex scripts (handles special chars better)
-                response = await client.post(vdj_script_url, content=script, headers=headers)
-
+                #response = await client.post(vdj_script_url, content=script, headers=headers)
+                response = await client.get(vdj_script_url, headers=headers)
+                    
                 if response.status_code == 200:
                     result = response.text.strip()
                     # For execute, result is 'true' or 'false'
@@ -88,10 +86,6 @@ class VirtualDJClient:
                     return {"status": "error", "error": "Authentication failed - check password"}
                 else:
                     return {"status": "error", "error": f"HTTP {response.status_code}: {response.text}"}
-
-            finally:
-                if close_after:
-                    await client.aclose()
 
         except httpx.ConnectError:
             return {"status": "error", "error": "Cannot connect to VirtualDJ Network Control Plugin. Is it enabled?"}

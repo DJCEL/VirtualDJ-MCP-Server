@@ -20,6 +20,9 @@ def main():
         sys.exit()
 
 
+    result = asyncio.run(vdj_client.play(1))
+    console.print(result)
+
     # Run the FastMCP server
     try:
         run_mcp_server(vdj_client)
