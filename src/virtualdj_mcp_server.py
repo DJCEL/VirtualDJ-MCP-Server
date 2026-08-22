@@ -6,10 +6,11 @@ console = Console(file=sys.stderr)
 
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
+
 from pydantic import BaseModel, Field
 
 from config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
-from virtualdj_client import VDJError, VirtualDJClient
+from virtualdj_client import VDJError
 
 #------------------------------------------------------------------------------------------------------------------------------------
 class DeckStatus(BaseModel):
