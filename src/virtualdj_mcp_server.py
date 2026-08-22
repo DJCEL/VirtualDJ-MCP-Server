@@ -26,7 +26,19 @@ class DeckStatus(BaseModel):
     key: str | None = Field(description="Musical key")
     volume: int = Field(description="Deck volume (0-100)")
     pitch: float = Field(description="Pitch adjustment (-100 to +100)")
-
+    gain: float = Field(description="Gain adjustment (-100 to +100)")
+    eq_high: float = Field(description="Eq High adjustment (-100 to +100)")
+    eq_mid: float = Field(description="Eq Mid adjustment (-100 to +100)")
+    eq_low: float = Field(description="Eq Low adjustment (-100 to +100)")
+    color_fx: float = Field(description="ColorFX adjustment (-100 to +100)")
+#------------------------------------------------------------------------------------------------------------------------------------
+class MixerStatus(BaseModel):
+    """Status of the DJ mixer"""
+    crossfader_position: float = Field(description="Crossfader position (-100 to +100)")
+    master_volume: int = Field(description="Master volume (0-100)")
+    headphone_volume: int = Field(description="Headphone volume (0-100)")
+    headphone_cue: str = Field(description="Headphone cue selection (deck1, deck2, master)")
+    headphone_mix:int = Field(description="Headphone mix (0-100)")
 #------------------------------------------------------------------------------------------------------------------------------------
 def define_mcp_server_api_routes(mcp: FastMCP,vdj_client):
 
@@ -113,6 +125,39 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
 
         except Exception as e:
             console.print(f"Error in play_pause_deck: {e}")
+            raise VDJError(str(e))
+
+    #------------------------------------------------------------------------------------
+    @mcp.tool()
+    async def set_crossfader_position(position: float) -> MixerStatus:
+        try:
+            # Clamp position to valid range
+            position = max(-100, min(100, position))
+
+            # Convert to VirtualDJ format (0-100 where 50 is center)
+            vdj_position = (position + 100) / 2
+
+            cmd = f"crossfader {vdj_position}%"
+
+            async with client:
+                result = await vdj_client.send_command(cmd)
+                if result["status"] != "success":
+                    raise VDJError(f"Failed to set crossfader: {result.get('error', 'Unknown error')}")
+
+                console.print(f"Crossfader set to {position}")
+
+                # Return updated mixer status
+                result_final = MixerStatus(
+                    crossfader_position=position,
+                    master_volume=100,
+                    headphone_volume=75,
+                    headphone_cue='master',
+                )
+
+                return result_final
+
+        except Exception as e:
+            console.print(f"Error in set_crossfader_position: {e}")
             raise VDJError(str(e))
 
 #------------------------------------------------------------------------------------------------------------------------------------
