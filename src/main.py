@@ -19,9 +19,9 @@ def main():
     if (vdj_client_connected == False):
         sys.exit()
 
-
+    # vdj_client - test 1
     result = asyncio.run(vdj_client.play(1))
-    console.print(result)
+    console.print(f"VirtualDJ - test 1: {result}")
 
     # Run the FastMCP server
     try:
