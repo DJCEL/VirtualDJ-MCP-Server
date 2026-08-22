@@ -14,7 +14,7 @@ from virtualdj_client import VDJError, VirtualDJClient
 #------------------------------------------------------------------------------------------------------------------------------------
 class DeckStatus(BaseModel):
     """Current status of a DJ deck"""
-    deck_id: int = Field(description="Deck number (1-8)")
+    deck_id: int = Field(description="Deck number")
     is_playing: bool = Field(description="Whether deck is currently playing")
     track_path: str | None = Field(description="Path to currently loaded track")
     track_title: str | None = Field(description="Track title")
@@ -34,39 +34,11 @@ def define_mcp_server_api_routes(mcp: FastMCP,vdj_client):
         result = PlainTextResponse("VirtualDJ-MCP-Server")
         return result
 
-    """
-    @mcp.custom_route("/api", methods=["GET"])
-    async def api_index():
-        result = {
-            "service": "virtualdj-mcp",
-            "version": "1.0.0",
-            "endpoints": {
-                "health": "/api/health",
-                "settings": "/api/settings",
-                "deck_status": "/api/v1/deck/{deck_id}/status",
-                "deck_load": "/api/v1/deck/{deck_id}/load",
-                "deck_play_pause": "/api/v1/deck/{deck_id}/play_pause",
-                "deck_sync": "/api/v1/deck/{deck_id}/sync",
-                "deck_cue": "/api/v1/deck/{deck_id}/cue",
-            },
-        }
-        return result
-    """
 #------------------------------------------------------------------------------------------------------------------------------------
 def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
 
-    # ==================== DECK CONTROL SUITE ====================
     @mcp.tool()
     async def get_deck_status(deck_id: int) -> DeckStatus:
-        """
-        Get current status of a specific deck
-
-        Args:
-            deck_id: Deck number (1-8)
-
-        Returns:
-            Current deck status and track information
-        """
         try:
             async with vdj_client:
                 # Get deck variables (VirtualDJ variable names)
@@ -89,8 +61,7 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
                         var_name = cmd.split("'")[1]
                         results[var_name] = result["result"]
 
-                # Parse results into DeckStatus
-                return DeckStatus(
+                result_final = DeckStatus(
                     deck_id=deck_id,
                     is_playing=results.get(f"deck{deck_id}_play", "0") == "1",
                     track_title=results.get(f"deck{deck_id}_title", "No Track"),
@@ -103,10 +74,11 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
                     pitch=float(results.get(f"deck{deck_id}_pitch", 0)),
                 )
 
+                return result_final
+
         except Exception as e:
-            console.print(f"[red]Error in get_deck_status: {e}[/red]")
-            # Return a default deck status on error
-            return DeckStatus(
+            console.print(f"Error in get_deck_status: {e}")
+            result_final = DeckStatus(
                 deck_id=deck_id,
                 is_playing=False,
                 track_title="Error",
@@ -116,19 +88,10 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
                 volume=0,
                 pitch=0.0,
             )
-
+            return result_final
+    #------------------------------------------------------------------------------------
     @mcp.tool()
     async def play_pause_deck(deck_id: int, action: str = "toggle") -> DeckStatus:
-        """
-        Control playback on a specific deck
-
-        Args:
-            deck_id: Deck number (1-8)
-            action: Action to perform (play, pause, toggle)
-
-        Returns:
-            Updated deck status
-        """
         try:
             if action == "play":
                 cmd = f"deck {deck_id} play"
@@ -143,45 +106,12 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
                 if result["status"] != "success":
                     raise VDJError(f"Failed to {action} deck {deck_id}: {result.get('error', 'Unknown error')}")
 
-                console.print(f"[green]Deck {deck_id}: {action}[/green]")
-                # Get updated deck status
-                return await get_deck_status(deck_id)
+                console.print(f"Deck {deck_id}: {action}")
+                result_final = await get_deck_status(deck_id)
+                return result_final
 
         except Exception as e:
-            console.print(f"[red]Error in play_pause_deck: {e}[/red]")
-            raise VDJError(str(e))
-
-
-    @mcp.tool()
-    async def load_track_to_deck(deck_id: int, track_path: str) -> DeckStatus:
-        """
-        Load a track to a specific deck
-
-        Args:
-            deck_id: Deck number (1-8)
-            track_path: Path to audio file or library reference
-
-        Returns:
-            Updated deck status with loaded track
-        """
-        try:
-            # Validate track path
-            if not Path(track_path).exists():
-                raise VDJError(f"Track file not found: {track_path}")
-
-            cmd = f"deck {deck_id} load '{track_path}'"
-
-            async with client:
-                result = await vdj_client.send_command(cmd)
-
-                if result["status"] != "success":
-                    raise VDJError(f"Failed to load track to deck {deck_id}: {result.get('error', 'Unknown error')}")
-
-                console.print(f"[green]Loaded '{Path(track_path).name}' to deck {deck_id}[/green]")
-                return await get_deck_status(deck_id)
-
-        except Exception as e:
-            console.print(f"[red]Error in load_track_to_deck: {e}[/red]")
+            console.print(f"Error in play_pause_deck: {e}")
             raise VDJError(str(e))
 
 #------------------------------------------------------------------------------------------------------------------------------------
@@ -209,17 +139,17 @@ def create_mcp_server(vdj_client):
     elif MCP_SERVER_TRANSPORT == "http":
         mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
     else:
-        console.print(f"[red]MCP_SERVER_TRANSPORT error.[/red]")
+        console.print(f"MCP_SERVER_TRANSPORT error.")
 #------------------------------------------------------------------------------------------------------------------------------------
 def run_mcp_server(vdj_client):
-    console.print("[green]VirtualDJ-MCP-Server starting...[/green]")
+    console.print("VirtualDJ-MCP-Server starting...")
 
     try:
         create_mcp_server(vdj_client)
     except KeyboardInterrupt:
-        console.print("[yellow]MCP Server shutdown requested[/yellow]")
+        console.print("MCP Server shutdown requested")
     except Exception as e:
-        console.print(f"[red]MCP Server error: {e}[/red]")
+        console.print(f"MCP Server error: {e}")
         raise
     finally:
-        console.print("[green]VirtualDJ-MCP MCP Server stopped[/green]")
+        console.print("VirtualDJ-MCP MCP Server stopped")
