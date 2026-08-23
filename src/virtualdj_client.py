@@ -1,9 +1,7 @@
-""" VirtualDJ HTTP API client using Network Control Plugin """
+""" VirtualDJ HTTP API client using the Network Control plugin """
 import httpx
-from pathlib import Path
 from typing import Any
 import psutil
-#from urllib.parse import quote
 
 from config import VDJ_NETWORK_CONTROL_HOST, VDJ_NETWORK_CONTROL_PORT, VDJ_NETWORK_CONTROL_PASSWORD, VDJ_NETWORK_CONTROL_TIMEOUT
 from config import VDJ_PROCESS_NAME 
@@ -15,7 +13,7 @@ class VDJError(Exception):
 #------------------------------------------------------------------------------------------------------------------------------------
 class VirtualDJClient:
     def __init__(self):
-        self.base_url = f"http://{VDJ_NETWORK_CONTROL_HOST}:{VDJ_NETWORK_CONTROL_PORT}"
+        self.vdj_base_url = f"http://{VDJ_NETWORK_CONTROL_HOST}:{VDJ_NETWORK_CONTROL_PORT}"
         self._client: httpx.AsyncClient | None = None
     #------------------------------------------------------------------------------------
     async def __aenter__(self):
@@ -33,112 +31,124 @@ class VirtualDJClient:
             headers["Authorization"] = f"Bearer {VDJ_NETWORK_CONTROL_PASSWORD}"
         return headers
     #------------------------------------------------------------------------------------
-    async def is_running(self) -> bool:
-        """ Check if VirtualDJ is running and Network Control Plugin is responding """
-       
-        # First check process
-        for proc in psutil.process_iter(["pid", "name"]):
-            process_name = proc.info["name"].lower()
-            if process_name and VDJ_PROCESS_NAME in process_name:
-                # Process running, check HTTP API
-                try:
-                    script = "nop"
-                    response = await self.execute(script)
-                    return (response.status_code == 200)
-                except Exception:
-                    return False  # Process running but plugin not responding
-        
-        return False
-    #------------------------------------------------------------------------------------       
-    async def send_command(self, command: str) -> dict[str, Any]:
-        """Send VDJScript command via HTTP API"""
-        return await self._send_http_command(command, is_query=False)
-    #------------------------------------------------------------------------------------
-    async def execute(self, script: str) -> bool:
-        """Execute VDJScript and return success status"""
-        result = await self.send_command(script)
-        return result.get("status") == "success" and result.get("result", "").lower() == "true"
-    #------------------------------------------------------------------------------------
-    async def query(self, script: str) -> dict[str, Any]:
-        """Query VirtualDJ for information via HTTP API"""
-        return await self._send_http_command(script, is_query=True)
-    #------------------------------------------------------------------------------------
-    async def _send_http_command(self, script: str, is_query: bool = False) -> dict[str, Any]:
-        """Send command via HTTP Network Control Plugin API"""
-        endpoint = "query" if is_query else "execute"
+    async def _send_http_command(self, vdj_script: str, is_query: bool = False) -> dict[str, Any]:
+        """ Send command via HTTP Network Control Plugin """
+        vdj_endpoint = "query" if is_query else "execute"
         headers = self._get_headers()
-        vdj_script_url = f"{self.base_url}/{endpoint}"
-        vdj_script_url_full = f"{vdj_script_url}?script={script}"
+        vdj_url = f"{self.vdj_base_url}/{vdj_endpoint}"
+        vdj_url_full = f"{vdj_url}?script={vdj_script}"
 
         try:
             async with httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT) as client:
-                #response = await client.post(vdj_script_url, params={"script": script}, headers=headers)
-                response = await client.get(vdj_script_url_full, headers=headers)
+                #response = await client.post(vdj_url, params={"script": vdj_script}, headers=headers)
+                response = await client.get(vdj_url_full, headers=headers)
                 if response.status_code == 200:
                     result = response.text.strip()
                     if is_query:
-                        return {"status": "success", "result": result}
+                        result_len = len(result)
+                        bErr = False 
+                        if (result_len >= 6):
+                            ext_result = result[0:6]
+                            bErr = (ext_result.lower() == "error:")
+                        st = "error" if bErr else "success"
+                        return {"status": st, "result": result}
                     else:
-                        success = result.lower() == "true"
-                        return {"status": "success" if success else "error", "result": result}
+                        bErr = (result.lower() != "true")
+                        st = "error" if bErr else "success"
+                        return {"status": st, "result": result}
                 elif response.status_code == 401:
                     return {"status": "error", "error": "Authentication failed - check password"}
                 else:
                     return {"status": "error", "error": f"HTTP {response.status_code}: {response.text}"}
-
         except httpx.ConnectError:
-            return {"status": "error", "error": "Cannot connect to VirtualDJ Network Control Plugin. Is it enabled?"}
+            return {"status": "error", "error": "HTTP error"}
         except httpx.TimeoutException:
-            return {"status": "error", "error": "Command timeout"}
+            return {"status": "error", "error": "HTTP timeout"}
         except Exception as e:
             return {"status": "error", "error": str(e)}
     #------------------------------------------------------------------------------------
-    #  Examples for VirtualDJ query
+    async def query(self, vdj_script: str) -> dict[str, Any]:
+        """ Query VirtualDJ with a vdj_script """
+        result = await self._send_http_command(vdj_script, is_query=True)
+        return result
+    #------------------------------------------------------------------------------------       
+    async def execute(self, vdj_script: str) -> dict[str, Any]:
+        """ Send command to VirtualDJ with a vdj_script """
+        result = await self._send_http_command(vdj_script)
+        return result
+    #------------------------------------------------------------------------------------
+    async def querycheck(self, vdj_script: str) -> bool:
+        """ Query VirtualDJ with a vdj_script and return status """
+        result = await self.query(vdj_script)
+        bRes = (result.get("status") == "success")
+        return bRes
+    #------------------------------------------------------------------------------------
+    async def queryfull(self, vdj_script: str) -> dict[str, Any]:
+        """ Query VirtualDJ with a vdj_script """
+        result = await self.query(vdj_script)
+        if result["status"] == "success":
+            result_final = result.get("result", "")
+            return result_final
+        else:
+            raise VDJError(f"Failed to query {vdj_script}: {result.get('error', 'Unknown error')}")
+    #------------------------------------------------------------------------------------
+    async def executefull(self, vdj_script: str) -> bool:
+        """ Execute a vdj_script and return status """
+        result = await self.execute(vdj_script)
+        bRes = result.get("status") == "success" and result.get("result", "").lower() == "true"
+        return bRes
+    #------------------------------------------------------------------------------------
+    #  VirtualDJ queries - specific
+    #------------------------------------------------------------------------------------
+    async def is_running(self) -> bool:
+        """ Check if VirtualDJ software is running and Network Control Plugin is responding """
+        vdj_script = "get_version"
+
+        for proc in psutil.process_iter(["pid", "name"]):
+            process_name = proc.info["name"].lower()
+            if process_name and VDJ_PROCESS_NAME in process_name:
+                result = await self.querycheck(vdj_script)
+                return result
+
+        return False
+    #------------------------------------------------------------------------------------
+    async def get_build(self) -> Any:
+        vdj_script = "get_build"
+        result = await self.queryfull(vdj_script)
+        return result
     #------------------------------------------------------------------------------------
     async def get_variable(self, variable: str) -> Any:
         """Get a VirtualDJ variable value"""
-        result = await self.query(f"get_var '{variable}'")
-        if result["status"] == "success":
-            return result.get("result", "")
+        vdj_script = f"get_var '{variable}'"
+        result = await self.queryfull(vdj_script)
+        return result
+    #------------------------------------------------------------------------------------
+    # VirtualDJ executes - specific
+    #------------------------------------------------------------------------------------
+    async def executefull_verb_deck(self, vdj_verb: str, vdj_deck: str = None) -> bool:
+        """ Execute a vdj_script on a deck and return status """
+        if vdj_deck is None:
+            vdj_script = f"{vdj_verb}"
         else:
-            raise VDJError(f"Failed to get variable {variable}: {result.get('error', 'Unknown error')}")
+            vdj_script = f"deck {vdj_deck} {vdj_verb}"
+        result = await self.executefull(vdj_script)
+        return result
     #------------------------------------------------------------------------------------
-    async def get_deck_info(self, deck_id: int) -> dict[str, Any]:
-        """Get comprehensive deck information"""
-        info = {}
-        queries = {
-            "title": f"deck {deck_id} get_title",
-            "artist": f"deck {deck_id} get_artist",
-            "bpm": f"deck {deck_id} get_bpm",
-            "key": f"deck {deck_id} get_key",
-            "position": f"deck {deck_id} get_position",
-            "duration": f"deck {deck_id} get_songlength",
-            "is_playing": f"deck {deck_id} get_isplaying",
-        }
-
-        for key, script in queries.items():
-            result = await self.query(script)
-            if result["status"] == "success":
-                info[key] = result["result"]
-            else:
-                info[key] = None
-
-        return info
+    async def play(self, vdj_deck: str) -> bool:
+        """ Play on a deck"""
+        dj_script = f"deck {vdj_deck} play"
+        result = self.executefull(vdj_script)
+        return result
     #------------------------------------------------------------------------------------
-    # Examples for VirtualDJ execute
+    async def pause(self, vdj_deck: str) -> bool:
+        """Pause a deck"""
+        vdj_script = f"deck {vdj_deck} pause"
+        result = self.executefull(vdj_script)
+        return result
     #------------------------------------------------------------------------------------
-    async def play(self, deck_id: int) -> bool:
-        """Start playback on a deck"""
-        cmd = f"deck {deck_id} play"
-        return await self.execute(cmd)
-    #------------------------------------------------------------------------------------
-    async def pause(self, deck_id: int) -> bool:
-        """Pause playback on a deck"""
-        cmd = f"deck {deck_id} pause"
-        return await self.execute(cmd)
-    #------------------------------------------------------------------------------------
-    async def stop(self, deck_id: int) -> bool:
-        """Stop playback on a deck"""
-        cmd = f"deck {deck_id} stop"
-        return await self.execute(cmd)
+    async def stop(self, vdj_deck: str) -> bool:
+        """Stop a deck"""
+        dj_script = f"deck {vdj_deck} stop"
+        result = self.executefull(vdj_script)
+        return result
     #------------------------------------------------------------------------------------
