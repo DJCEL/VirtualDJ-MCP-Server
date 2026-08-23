@@ -72,7 +72,7 @@ class VirtualDJClient:
 
         try:
             async with httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT) as client:
-                #response = await client.post(vdj_script_url, scontent=cript, headers=headers)
+                #response = await client.post(vdj_script_url, params={"script": script}, headers=headers)
                 response = await client.get(vdj_script_url_full, headers=headers)
                 if response.status_code == 200:
                     result = response.text.strip()
