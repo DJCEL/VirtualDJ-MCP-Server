@@ -2,7 +2,6 @@
 import httpx
 from pathlib import Path
 from typing import Any
-import httpx
 import psutil
 
 from config import VDJ_NETWORK_CONTROL_HOST, VDJ_NETWORK_CONTROL_PORT, VDJ_NETWORK_CONTROL_PASSWORD, VDJ_NETWORK_CONTROL_TIMEOUT
