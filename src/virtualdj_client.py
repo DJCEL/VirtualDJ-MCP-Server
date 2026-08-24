@@ -1,6 +1,6 @@
 """ VirtualDJ HTTP API client using the Network Control plugin """
 import httpx
-from typing import Any
+from typing import Any, Literal
 import psutil
 from urllib.parse import quote as encodeURI
 
@@ -15,6 +15,10 @@ def debug_console(msg:str):
     from rich.console import Console
     console = Console(file=sys.stderr)
     console.print(msg)
+#------------------------------------------------------------------------------------------------------------------------------------
+class VDJDeck:
+    name : Literal['left', 'right', 'leftvideo', 'rightvideo', 'all', 'default', 'active', 'master']
+    id : int
 #------------------------------------------------------------------------------------------------------------------------------------
 class VDJError(Exception):
     """VirtualDJ operation error"""
@@ -109,6 +113,8 @@ class VirtualDJClient:
         result = await self.execute(vdj_script)
         bRes = result.get("status") == "success" and result.get("result", "").lower() == "true"
         return bRes
+
+
     #------------------------------------------------------------------------------------
     #  VirtualDJ queries - specific
     #------------------------------------------------------------------------------------
@@ -125,15 +131,18 @@ class VirtualDJClient:
         return False
     #------------------------------------------------------------------------------------
     async def get_build(self) -> Any:
+        """ Get the VirtualDJ build """
         vdj_script = "get_build"
         result = await self.queryfull(vdj_script)
         return result
     #------------------------------------------------------------------------------------
     async def get_variable(self, variable: str) -> Any:
-        """Get a VirtualDJ variable value"""
+        """ Get a value of a VirtualDJ variable """
         vdj_script = f"get_var '{variable}'"
         result = await self.queryfull(vdj_script)
         return result
+
+
     #------------------------------------------------------------------------------------
     # VirtualDJ executes - specific
     #------------------------------------------------------------------------------------
@@ -148,19 +157,42 @@ class VirtualDJClient:
     #------------------------------------------------------------------------------------
     async def play(self, vdj_deck: str) -> bool:
         """ Play on a deck"""
-        dj_script = f"deck {vdj_deck} play"
-        result = self.executefull(vdj_script)
+        vdj_script = f"deck {vdj_deck} play"
+        result = await self.executefull(vdj_script)
         return result
     #------------------------------------------------------------------------------------
     async def pause(self, vdj_deck: str) -> bool:
-        """Pause a deck"""
+        """ Pause a deck """
         vdj_script = f"deck {vdj_deck} pause"
-        result = self.executefull(vdj_script)
+        result = await self.executefull(vdj_script)
         return result
     #------------------------------------------------------------------------------------
     async def stop(self, vdj_deck: str) -> bool:
-        """Stop a deck"""
-        dj_script = f"deck {vdj_deck} stop"
-        result = self.executefull(vdj_script)
+        """ Stop a deck """
+        vdj_script = f"deck {vdj_deck} stop"
+        result = await self.executefull(vdj_script)
+        return result
+    #------------------------------------------------------------------------------------ 
+    async def play_pause(self, vdj_deck: str) -> bool:
+        """ Toggle play & pause on a deck """
+        vdj_script = f"deck {vdj_deck} play_pause"
+        result = await self.executefull(vdj_script)
         return result
     #------------------------------------------------------------------------------------
+    async def play_button(self, vdj_deck: str) -> bool:
+        """ play_button a deck """
+        vdj_script = f"deck {vdj_deck} play_button"
+        result = await self.executefull(vdj_script)
+        return result
+
+
+    #------------------------------------------------------------------------------------
+    # VirtualDJ tools
+    #------------------------------------------------------------------------------------
+    def vdjscript_and(vdj_script1:str, vdj_script2:str):
+        vdj_script_full = vdj_script1 + ' & ' + vdj_script2
+        return vdj_script_full
+    #------------------------------------------------------------------------------------
+    def vdjscript_if_then_else(vdj_script_condition:str, vdj_script_if_true:str, vdj_script_if_false:str):
+        vdj_script_full = vdj_script_condition + ' ? ' + vdj_script_if_true + " : " + vdj_script_if_false
+        return vdj_script_full

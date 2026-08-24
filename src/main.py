@@ -23,9 +23,13 @@ def main():
     console.print(f"VirtualDJ build: {vdj_build}")
 
     # vdj_client - test 1
-    vdj_script = "deck 1 play_pause & loop 4 & crossfader -5%"
-    result = asyncio.run(vdj_client.executefull(vdj_script))
-    console.print(f"VirtualDJ script: < {vdj_script} > => {result}")
+    vdj_script1 = "deck 1 play_pause & loop 4 & crossfader -5%"
+    result1 = asyncio.run(vdj_client.executefull(vdj_script1))
+    console.print(f"VirtualDJ script < {vdj_script1} > => {result1}")
+
+    # vdj_client - test 2
+    result2 = asyncio.run(vdj_client.play('right'))
+    console.print(f"VirtualDJ script < deck right play > => {result2}")
 
     sys.exit(0)
 
