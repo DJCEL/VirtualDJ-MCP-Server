@@ -1,7 +1,12 @@
 """ VirtualDJ HTTP API client using the Network Control plugin """
+import sys
 import httpx
 from typing import Any
 import psutil
+from urllib.parse import quote as encodeURI
+
+from rich.console import Console
+console = Console(file=sys.stderr)
 
 from config import VDJ_NETWORK_CONTROL_HOST, VDJ_NETWORK_CONTROL_PORT, VDJ_NETWORK_CONTROL_PASSWORD, VDJ_NETWORK_CONTROL_TIMEOUT
 from config import VDJ_PROCESS_NAME 
@@ -36,7 +41,10 @@ class VirtualDJClient:
         vdj_endpoint = "query" if is_query else "execute"
         headers = self._get_headers()
         vdj_url = f"{self.vdj_base_url}/{vdj_endpoint}"
-        vdj_url_full = f"{vdj_url}?script={vdj_script}"
+        encoded_vdjscript = encodeURI(vdj_script)
+        vdj_url_full = f"{vdj_url}?script={encoded_vdjscript}"
+
+        console.print(f"vdj_url_full: {vdj_url_full}")
 
         try:
             async with httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT) as client:
