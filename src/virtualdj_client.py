@@ -1,4 +1,6 @@
-""" VirtualDJ HTTP API client using the Network Control plugin """
+""" 
+VirtualDJ HTTP API client using the Network Control plugin 
+"""
 import httpx
 from typing import Any, Literal
 import psutil
@@ -45,7 +47,7 @@ class VirtualDJClient:
         return headers
     #------------------------------------------------------------------------------------
     async def _send_http_command(self, vdj_script: str, is_query: bool = False) -> dict[str, Any]:
-        """ Send command via HTTP Network Control Plugin """
+        """ Send command via HTTP Network Control plugin """
         vdj_endpoint = "query" if is_query else "execute"
         headers = self._get_headers()
         vdj_url = f"{self.vdj_base_url}/{vdj_endpoint}"
@@ -56,7 +58,6 @@ class VirtualDJClient:
 
         try:
             async with httpx.AsyncClient(timeout=VDJ_NETWORK_CONTROL_TIMEOUT) as client:
-                #response = await client.post(vdj_url, params={"script": vdj_script}, headers=headers)
                 response = await client.get(vdj_url_full, headers=headers)
                 if response.status_code == 200:
                     result = response.text.strip()
