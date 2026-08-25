@@ -6,9 +6,10 @@ from rich.console import Console
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from pydantic import BaseModel, Field
+#from urllib.parse import quote, urlparse
 
 from config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
-from virtualdj_client import VirtualDJClient, VDJError
+from client import VirtualDJClient, VDJError
 
 console = Console(file=sys.stderr)
 
