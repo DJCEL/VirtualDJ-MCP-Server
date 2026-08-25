@@ -50,6 +50,9 @@ def define_mcp_server_api_routes(mcp: FastMCP,vdj_client):
 #------------------------------------------------------------------------------------------------------------------------------------
 def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
 
+    #""" We can use prefab_ui to give our tool a UI """
+    #@mcp.tool(app=True)
+
     @mcp.tool()
     async def get_deck_status(deck_id: int) -> DeckStatus:
         try:
@@ -141,13 +144,6 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
         except Exception as e:
             console.print(f"Error in set_crossfader_position: {e}")
             raise VDJError(str(e))
-
-#------------------------------------------------------------------------------------------------------------------------------------
-def define_mcp_server_api_resources(mcp: FastMCP,vdj_client):
-    return
-#------------------------------------------------------------------------------------------------------------------------------------
-def define_mcp_server_api_prompts(mcp: FastMCP,vdj_client):
-    return  
 #------------------------------------------------------------------------------------------------------------------------------------
 def create_mcp_server(vdj_client):
     mcp = FastMCP("VirtualDJ-MCP",
@@ -155,24 +151,12 @@ def create_mcp_server(vdj_client):
                   on_duplicate="warn")
 
     define_mcp_server_api_tools(mcp,vdj_client)
-    define_mcp_server_api_resources(mcp,vdj_client)
-    define_mcp_server_api_prompts(mcp,vdj_client)
     define_mcp_server_api_routes(mcp,vdj_client) 
 
     return mcp
 #------------------------------------------------------------------------------------------------------------------------------------
-def run_mcp_server():
-    # Initialize VirtualDJ client
-    vdj_client = VirtualDJClient()
-
-    vdj_client_connected = False
-    vdj_client_connected = asyncio.run(vdj_client.is_running())
-    console.print(f"VirtualDJ connected: {vdj_client_connected}")
-    if (vdj_client_connected == False):
-        sys.exit()
-
+def run_mcp_server(vdj_client):
     console.print("VirtualDJ-MCP-Server starting...")
-
     try:
         mcp = create_mcp_server(vdj_client)
         if MCP_SERVER_TRANSPORT == "stdio":
@@ -189,5 +173,18 @@ def run_mcp_server():
     finally:
         console.print("VirtualDJ-MCP MCP Server stopped")
 #------------------------------------------------------------------------------------------------------------------------------------
+def main():
+    # Initialize VirtualDJ client
+    vdj_client = VirtualDJClient()
+
+    vdj_client_connected = False
+    vdj_client_connected = asyncio.run(vdj_client.is_running())
+    console.print(f"VirtualDJ connected: {vdj_client_connected}")
+    if (vdj_client_connected == False):
+        sys.exit()
+
+    run_mcp_server(vdj_client)
+
+#------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    run_mcp_server()
+    main()
