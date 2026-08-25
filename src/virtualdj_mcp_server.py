@@ -1,16 +1,16 @@
 import sys
+import asyncio
 from fastmcp import FastMCP
-
+#from mcp.server.fastmcp import FastMCP
 from rich.console import Console
-console = Console(file=sys.stderr)
-
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
-
 from pydantic import BaseModel, Field
 
 from config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
-from virtualdj_client import VDJError
+from virtualdj_client import VirtualDJClient, VDJError
+
+console = Console(file=sys.stderr)
 
 #------------------------------------------------------------------------------------------------------------------------------------
 class DeckStatus(BaseModel):
@@ -55,7 +55,7 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
         try:
             async with vdj_client:
                 # Get deck variables (VirtualDJ variable names)
-                commands = [
+                vdj_script_list = [
                     f"get_var 'deck{deck_id}_play'",
                     f"get_var 'deck{deck_id}_title'",
                     f"get_var 'deck{deck_id}_artist'",
@@ -68,11 +68,10 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
                 ]
 
                 results = {}
-                for cmd in commands:
-                    result = await vdj_client.send_command(cmd)
-                    if result["status"] == "success":
-                        var_name = cmd.split("'")[1]
-                        results[var_name] = result["result"]
+                for vdj_script in vdj_script_list:
+                    result = await vdj_client.query_vdj_script(vdj_script)
+                    var_name = vdj_script.split("'")[1]
+                    results[var_name] = result["result"]
 
                 result_final = DeckStatus(
                     deck_id=deck_id,
@@ -104,24 +103,19 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
             return result_final
     #------------------------------------------------------------------------------------
     @mcp.tool()
-    async def play_pause_deck(deck_id: int, action: str = "toggle") -> DeckStatus:
+    async def play_pause_deck(deck_id: int, action: str = "toggle") -> bool:
         try:
             if action == "play":
-                cmd = f"deck {deck_id} play"
+                vdj_script = f"deck {deck_id} play"
             elif action == "pause":
-                cmd = f"deck {deck_id} pause"
+                vdj_script = f"deck {deck_id} pause"
             else:  # toggle
-                cmd = f"deck {deck_id} play_pause"
+                vdj_script = f"deck {deck_id} play_pause"
 
             async with vdj_client:
-                result = await vdj_client.send_command(cmd)
-
-                if result["status"] != "success":
-                    raise VDJError(f"Failed to {action} deck {deck_id}: {result.get('error', 'Unknown error')}")
-
+                result = await vdj_client.execute_vdj_script(vdj_script)
                 console.print(f"Deck {deck_id}: {action}")
-                result_final = await get_deck_status(deck_id)
-                return result_final
+                return result
 
         except Exception as e:
             console.print(f"Error in play_pause_deck: {e}")
@@ -129,7 +123,7 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
 
     #------------------------------------------------------------------------------------
     @mcp.tool()
-    async def set_crossfader_position(position: float) -> MixerStatus:
+    async def set_crossfader_position(position: float) -> bool:
         try:
             # Clamp position to valid range
             position = max(-100, min(100, position))
@@ -137,24 +131,12 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
             # Convert to VirtualDJ format (0-100 where 50 is center)
             vdj_position = (position + 100) / 2
 
-            cmd = f"crossfader {vdj_position}%"
+            vdj_script = f"crossfader {vdj_position}%"
 
-            async with client:
-                result = await vdj_client.send_command(cmd)
-                if result["status"] != "success":
-                    raise VDJError(f"Failed to set crossfader: {result.get('error', 'Unknown error')}")
-
+            async with vdj_client:
+                result = await vdj_client.execute_vdj_script(vdj_script)
                 console.print(f"Crossfader set to {position}")
-
-                # Return updated mixer status
-                result_final = MixerStatus(
-                    crossfader_position=position,
-                    master_volume=100,
-                    headphone_volume=75,
-                    headphone_cue='master',
-                )
-
-                return result_final
+                return result
 
         except Exception as e:
             console.print(f"Error in set_crossfader_position: {e}")
@@ -165,33 +147,40 @@ def define_mcp_server_api_resources(mcp: FastMCP,vdj_client):
     return
 #------------------------------------------------------------------------------------------------------------------------------------
 def define_mcp_server_api_prompts(mcp: FastMCP,vdj_client):
-    return
-#------------------------------------------------------------------------------------------------------------------------------------
-def define_mcp_server_api(mcp: FastMCP, vdj_client):
-    define_mcp_server_api_tools(mcp,vdj_client)
-    define_mcp_server_api_resources(mcp,vdj_client)
-    define_mcp_server_api_prompts(mcp,vdj_client)
-    define_mcp_server_api_routes(mcp,vdj_client) 
+    return  
 #------------------------------------------------------------------------------------------------------------------------------------
 def create_mcp_server(vdj_client):
     mcp = FastMCP("VirtualDJ-MCP",
                   instructions="Provides an API to communicate with VirtualDJ.",
                   on_duplicate="warn")
 
-    define_mcp_server_api(mcp,vdj_client)
+    define_mcp_server_api_tools(mcp,vdj_client)
+    define_mcp_server_api_resources(mcp,vdj_client)
+    define_mcp_server_api_prompts(mcp,vdj_client)
+    define_mcp_server_api_routes(mcp,vdj_client) 
 
-    if MCP_SERVER_TRANSPORT == "stdio":
-        mcp.run()
-    elif MCP_SERVER_TRANSPORT == "http":
-        mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
-    else:
-        console.print(f"MCP_SERVER_TRANSPORT error.")
+    return mcp
 #------------------------------------------------------------------------------------------------------------------------------------
-def run_mcp_server(vdj_client):
+def run_mcp_server():
+    # Initialize VirtualDJ client
+    vdj_client = VirtualDJClient()
+
+    vdj_client_connected = False
+    vdj_client_connected = asyncio.run(vdj_client.is_running())
+    console.print(f"VirtualDJ connected: {vdj_client_connected}")
+    if (vdj_client_connected == False):
+        sys.exit()
+
     console.print("VirtualDJ-MCP-Server starting...")
 
     try:
-        create_mcp_server(vdj_client)
+        mcp = create_mcp_server(vdj_client)
+        if MCP_SERVER_TRANSPORT == "stdio":
+            mcp.run()
+        elif MCP_SERVER_TRANSPORT == "http":
+            mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
+        else:
+            console.print(f"MCP_SERVER_TRANSPORT error.")
     except KeyboardInterrupt:
         console.print("MCP Server shutdown requested")
     except Exception as e:
@@ -199,3 +188,6 @@ def run_mcp_server(vdj_client):
         raise
     finally:
         console.print("VirtualDJ-MCP MCP Server stopped")
+#------------------------------------------------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    run_mcp_server()
