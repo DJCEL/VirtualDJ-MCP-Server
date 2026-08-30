@@ -1,0 +1,5 @@
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:httpx:HTTP Request: GET https://pypi.org/pypi/fastmcp/json "HTTP/1.1 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager shutting down

@@ -5,7 +5,7 @@
     <ProjectGuid>31ba0375-6dcf-4361-98b8-5abf15a5477b</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>src\main.py</StartupFile>
+    <StartupFile>src\virtualdj_mcp\__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,13 +29,17 @@
     <InterpreterReference Include="Global|PythonCore|3.14" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".\src\main.py" />
-    <Compile Include="src\config.py" />
-    <Compile Include="src\virtualdj_client.py" />
-    <Compile Include="src\virtualdj_mcp_server.py" />
+    <Compile Include="src\virtualdj_mcp\__init__.py" />
+    <Compile Include="src\virtualdj_mcp\__main__.py" />
+    <Compile Include="src\virtualdj_mcp\config.py" />
+    <Compile Include="src\virtualdj_mcp\client.py" />
+    <Compile Include="src\virtualdj_mcp\server.py" />
+    <Compile Include="tests\test_client.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\virtualdj_mcp\" />
+    <Folder Include="tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

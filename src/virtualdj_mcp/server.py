@@ -41,15 +41,20 @@ class MixerStatus(BaseModel):
     headphone_cue: str = Field(description="Headphone cue selection (deck1, deck2, master)")
     headphone_mix:int = Field(description="Headphone mix (0-100)")
 #------------------------------------------------------------------------------------------------------------------------------------
-def define_mcp_server_api_routes(mcp: FastMCP,vdj_client):
+def define_mcp_routes(mcp: FastMCP,vdj_client: VirtualDJClient):
 
     @mcp.custom_route("/", methods=["GET"])
     async def api_root(request: Request) -> PlainTextResponse:
         result = PlainTextResponse("VirtualDJ-MCP-Server")
         return result
 
+    @mcp.custom_route("/mcp", methods=["GET"])
+    async def api_root(request: Request) -> PlainTextResponse:
+        result = PlainTextResponse("VirtualDJ-MCP-Server")
+        return result
+
 #------------------------------------------------------------------------------------------------------------------------------------
-def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
+def define_mcp_tools(mcp: FastMCP, vdj_client: VirtualDJClient):
 
     #""" We can use prefab_ui to give our tool a UI """
     #@mcp.tool(app=True)
@@ -73,7 +78,7 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
 
                 results = {}
                 for vdj_script in vdj_script_list:
-                    result = await vdj_client.query_vdj_script(vdj_script)
+                    result = await vdj_client.get_async(vdj_script)
                     var_name = vdj_script.split("'")[1]
                     results[var_name] = result["result"]
 
@@ -117,7 +122,7 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
                 vdj_script = f"deck {deck_id} play_pause"
 
             async with vdj_client:
-                result = await vdj_client.execute_vdj_script(vdj_script)
+                result = await vdj_client.send_async(vdj_script)
                 console.print(f"Deck {deck_id}: {action}")
                 return result
 
@@ -138,7 +143,7 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
             vdj_script = f"crossfader {vdj_position}%"
 
             async with vdj_client:
-                result = await vdj_client.execute_vdj_script(vdj_script)
+                result = await vdj_client.send_async(vdj_script)
                 console.print(f"Crossfader set to {position}")
                 return result
 
@@ -146,17 +151,18 @@ def define_mcp_server_api_tools(mcp: FastMCP, vdj_client):
             console.print(f"Error in set_crossfader_position: {e}")
             raise VDJError(str(e))
 #------------------------------------------------------------------------------------------------------------------------------------
-def create_mcp_server(vdj_client):
+def create_mcp_server(vdj_client: VirtualDJClient):
     mcp = FastMCP("VirtualDJ-MCP",
                   instructions="Provides an API to communicate with VirtualDJ.",
                   on_duplicate="warn")
 
-    define_mcp_server_api_tools(mcp,vdj_client)
-    define_mcp_server_api_routes(mcp,vdj_client) 
+    define_mcp_tools(mcp,vdj_client)
+    define_mcp_routes(mcp,vdj_client)
+    #define_mcp_ressources(mcp,vdj_client) 
 
     return mcp
 #------------------------------------------------------------------------------------------------------------------------------------
-def run_mcp_server(vdj_client):
+def run_mcp_server(vdj_client: VirtualDJClient):
     console.print("VirtualDJ-MCP-Server starting...")
     try:
         mcp = create_mcp_server(vdj_client)
@@ -175,16 +181,31 @@ def run_mcp_server(vdj_client):
         console.print("VirtualDJ-MCP MCP Server stopped")
 #------------------------------------------------------------------------------------------------------------------------------------
 def main():
-    # Initialize VirtualDJ client
-    vdj_client = VirtualDJClient()
+   # Initialize VirtualDJ client
+    client = VirtualDJClient()
 
-    vdj_client_connected = False
-    vdj_client_connected = asyncio.run(vdj_client.is_running())
-    console.print(f"VirtualDJ connected: {vdj_client_connected}")
-    if (vdj_client_connected == False):
+    # Check if VirtualDJ is running
+    client_running = client.is_app_running()
+    console.print(f"VirtualDJ running => {client_running}")
+
+    # Launch VirtualDJ if not running
+    if client_running == False:
+        console.print("Launching VirtualDJ...")
+        client_launching = client.open_app()
+        console.print(f"VirtualDJ launching => {client_launching}")
+        client_running = client.is_app_running()
+        console.print(f"VirtualDJ running => {client_running}")
+        if (client_running == False):
+            sys.exit()
+
+    # Check the NetWork Control plugin
+    client_connected = client.is_connected()
+    console.print(f"VirtualDJ NetWork Control plugin connected => {client_connected}")
+    if (client_connected == False):
+        console.print("Check that the NetWork Control plugin is available and activated in VirtualDJ")
         sys.exit()
 
-    run_mcp_server(vdj_client)
+    run_mcp_server(client)
 
 #------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
