@@ -6,10 +6,9 @@ from rich.console import Console
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from pydantic import BaseModel, Field
-#from urllib.parse import quote, urlparse
 
-from config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
-from client import VirtualDJClient, VDJError
+from .config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
+from .client import VirtualDJClient, VDJError
 
 console = Console(file=sys.stderr)
 
@@ -49,110 +48,50 @@ def define_mcp_routes(mcp: FastMCP,vdj_client: VirtualDJClient):
         return result
 
     @mcp.custom_route("/mcp", methods=["GET"])
-    async def api_root(request: Request) -> PlainTextResponse:
-        result = PlainTextResponse("VirtualDJ-MCP-Server")
+    async def api_mcp(request: Request) -> PlainTextResponse:
+        result = PlainTextResponse("VirtualDJ-MCP-Server/mcp")
         return result
 
 #------------------------------------------------------------------------------------------------------------------------------------
 def define_mcp_tools(mcp: FastMCP, vdj_client: VirtualDJClient):
 
-    #""" We can use prefab_ui to give our tool a UI """
-    #@mcp.tool(app=True)
+    def slider_clamp(x: float) -> float:
+        # Clamp x to valid range [0-100]
+        return max(0, min(100, x))
 
-    @mcp.tool()
-    async def get_deck_status(deck_id: int) -> DeckStatus:
-        try:
-            async with vdj_client:
-                # Get deck variables (VirtualDJ variable names)
-                vdj_script_list = [
-                    f"get_var 'deck{deck_id}_play'",
-                    f"get_var 'deck{deck_id}_title'",
-                    f"get_var 'deck{deck_id}_artist'",
-                    f"get_var 'deck{deck_id}_position'",
-                    f"get_var 'deck{deck_id}_duration'",
-                    f"get_var 'deck{deck_id}_bpm'",
-                    f"get_var 'deck{deck_id}_key'",
-                    f"get_var 'deck{deck_id}_volume'",
-                    f"get_var 'deck{deck_id}_pitch'",
-                ]
-
-                results = {}
-                for vdj_script in vdj_script_list:
-                    result = await vdj_client.get_async(vdj_script)
-                    var_name = vdj_script.split("'")[1]
-                    results[var_name] = result["result"]
-
-                result_final = DeckStatus(
-                    deck_id=deck_id,
-                    is_playing=results.get(f"deck{deck_id}_play", "0") == "1",
-                    track_title=results.get(f"deck{deck_id}_title", "No Track"),
-                    track_artist=results.get(f"deck{deck_id}_artist", "Unknown Artist"),
-                    position=float(results.get(f"deck{deck_id}_position", 0)),
-                    duration=float(results.get(f"deck{deck_id}_duration", 0)),
-                    bpm=float(results.get(f"deck{deck_id}_bpm", 0)) if results.get(f"deck{deck_id}_bpm") else None,
-                    key=results.get(f"deck{deck_id}_key"),
-                    volume=int(results.get(f"deck{deck_id}_volume", 100)),
-                    pitch=float(results.get(f"deck{deck_id}_pitch", 0)),
-                )
-
-                return result_final
-
-        except Exception as e:
-            console.print(f"Error in get_deck_status: {e}")
-            result_final = DeckStatus(
-                deck_id=deck_id,
-                is_playing=False,
-                track_title="Error",
-                track_artist="Unknown",
-                position=0.0,
-                duration=0.0,
-                volume=0,
-                pitch=0.0,
-            )
-            return result_final
     #------------------------------------------------------------------------------------
     @mcp.tool()
-    async def play_pause_deck(deck_id: int, action: str = "toggle") -> bool:
+    async def send_VirtualDJ(vdj_script: str) -> bool:
         try:
-            if action == "play":
-                vdj_script = f"deck {deck_id} play"
-            elif action == "pause":
-                vdj_script = f"deck {deck_id} pause"
-            else:  # toggle
-                vdj_script = f"deck {deck_id} play_pause"
-
             async with vdj_client:
                 result = await vdj_client.send_async(vdj_script)
-                console.print(f"Deck {deck_id}: {action}")
+                console.print(f"vdj_client.send_async({vdj_script}) => {result}")
                 return result
 
         except Exception as e:
-            console.print(f"Error in play_pause_deck: {e}")
+            console.print(f"Error in send_VirtualDJ: {e}")
             raise VDJError(str(e))
 
     #------------------------------------------------------------------------------------
     @mcp.tool()
-    async def set_crossfader_position(position: float) -> bool:
+    async def set_crossfader(position: float) -> bool:
         try:
-            # Clamp position to valid range
-            position = max(-100, min(100, position))
 
-            # Convert to VirtualDJ format (0-100 where 50 is center)
-            vdj_position = (position + 100) / 2
+            position = slider_clamp(position)
 
-            vdj_script = f"crossfader {vdj_position}%"
+            vdj_script = f"crossfader {position}%"
 
             async with vdj_client:
                 result = await vdj_client.send_async(vdj_script)
-                console.print(f"Crossfader set to {position}")
+                console.print(f"vdj_client.send_async({vdj_script}) => {result}")
                 return result
 
         except Exception as e:
-            console.print(f"Error in set_crossfader_position: {e}")
+            console.print(f"Error in set_crossfader: {e}")
             raise VDJError(str(e))
 #------------------------------------------------------------------------------------------------------------------------------------
 def create_mcp_server(vdj_client: VirtualDJClient):
-    mcp = FastMCP("VirtualDJ-MCP",
+    mcp = FastMCP("VirtualDJ-MCP-Server",
                   instructions="Provides an API to communicate with VirtualDJ.",
                   on_duplicate="warn")
 

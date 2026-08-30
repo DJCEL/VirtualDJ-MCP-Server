@@ -3,3 +3,21 @@ INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0
 INFO:httpx:HTTP Request: GET https://pypi.org/pypi/fastmcp/json "HTTP/1.1 200 OK"
 INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
 INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager shutting down
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:mcp.server.streamable_http_manager:Created new transport with session ID: 341813f7e20249119d6bb0b02851d5c7
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:mcp.server.streamable_http_manager:Created new transport with session ID: 6b3f5d2e95b14fb196fc148186813594
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:mcp.server.streamable_http_manager:Created new transport with session ID: cf49e142ff5a42e98fc828c08148856f
+INFO:mcp.server.streamable_http_manager:Created new transport with session ID: 8a3a4f0111464633b073465048b5e627
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager shutting down
+INFO:httpx:HTTP Request: GET http://127.0.0.1/query?script=get_version "HTTP/1.0 200 OK"
+INFO:mcp.server.streamable_http_manager:StreamableHTTP session manager started
+INFO:mcp.server.streamable_http_manager:Created new transport with session ID: 59c30b78a72c42a8a11808f603d3a903

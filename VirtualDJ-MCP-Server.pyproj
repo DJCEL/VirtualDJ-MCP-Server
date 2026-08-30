@@ -5,17 +5,21 @@
     <ProjectGuid>31ba0375-6dcf-4361-98b8-5abf15a5477b</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>src\virtualdj_mcp\__main__.py</StartupFile>
+    <StartupFile>tests\test_client.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <InterpreterId>Global|PythonCore|3.14</InterpreterId>
-    <LaunchProvider>IronPython (.NET) launcher</LaunchProvider>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
     <OutputPath>.</OutputPath>
     <Name>VirtualDJ-MCP-Server</Name>
     <RootNamespace>VirtualDJ-MCP-Server</RootNamespace>
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
     <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+    <TestFramework>pytest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>.</UnitTestRootDirectory>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,12 +33,14 @@
     <InterpreterReference Include="Global|PythonCore|3.14" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\main.py" />
     <Compile Include="src\virtualdj_mcp\__init__.py" />
     <Compile Include="src\virtualdj_mcp\__main__.py" />
     <Compile Include="src\virtualdj_mcp\config.py" />
     <Compile Include="src\virtualdj_mcp\client.py" />
     <Compile Include="src\virtualdj_mcp\server.py" />
     <Compile Include="tests\test_client.py" />
+    <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />

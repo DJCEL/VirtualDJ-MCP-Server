@@ -14,8 +14,8 @@ import subprocess
 import platform
 import xml.etree.ElementTree as ET
 
-from config import VDJ_NETWORK_CONTROL_HOST, VDJ_NETWORK_CONTROL_PORT, VDJ_NETWORK_CONTROL_PASSWORD, VDJ_NETWORK_CONTROL_TIMEOUT, VDJ_NETWORK_CONTROL_DEBUG
-from config import VDJ_PROCESS_NAME, VDJ_PROCESS_PATH_WINDOWS, VDJ_PROCESS_PATH_MAC
+from .config import VDJ_NETWORK_CONTROL_HOST, VDJ_NETWORK_CONTROL_PORT, VDJ_NETWORK_CONTROL_PASSWORD, VDJ_NETWORK_CONTROL_TIMEOUT, VDJ_NETWORK_CONTROL_DEBUG
+from .config import VDJ_PROCESS_NAME, VDJ_PROCESS_PATH_WINDOWS, VDJ_PROCESS_PATH_MAC
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +34,6 @@ def _CreateClientLog():
 def _SaveClientLog(msg):
     if VDJ_NETWORK_CONTROL_DEBUG:
         logger.info(msg)
-#------------------------------------------------------------------------------------------------------------------------------------
-class VDJDeck:
-    name : Literal['left', 'right', 'leftvideo', 'rightvideo', 'all', 'default', 'active', 'master']
-    id : int
 #------------------------------------------------------------------------------------------------------------------------------------
 class VDJError(Exception):
     """VirtualDJ operation error"""
@@ -172,6 +168,10 @@ class VirtualDJClient:
     def get(self, vdj_script: str) -> str:
         return asyncio.run(self.get_async(vdj_script))
     #------------------------------------------------------------------------------------
+    class VDJDeck:
+        name : Literal['left', 'right', 'leftvideo', 'rightvideo', 'all', 'default', 'active', 'master']
+        id : int
+    #------------------------------------------------------------------------------------
     #  Launch / Quit VirtualDJ
     #------------------------------------------------------------------------------------
     def is_app_running(self) -> bool:
@@ -261,8 +261,11 @@ class VirtualDJClient:
         else:
             return True
     #------------------------------------------------------------------------------------
+    async def is_connected_async(self) -> bool:
+        return self._is_virtualdj_connected()
+    #------------------------------------------------------------------------------------
     def is_connected(self) -> bool:
-        return asyncio.run(self._is_virtualdj_connected()) 
+        return asyncio.run(self.is_connected_async()) 
     #------------------------------------------------------------------------------------
     # VirtualDJ script tools
     #------------------------------------------------------------------------------------
