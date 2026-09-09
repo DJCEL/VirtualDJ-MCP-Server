@@ -1,4 +1,9 @@
-from virtualdj_server_mcp.server_mcp import main
+from virtualdj_mcp_server.mcp_server import VirtualDJMCPServer
+
+#------------------------------------------------------------------------------------------------------------------------------------
+def main():
+    vdj_mcp = VirtualDJMCPServer()
+    vdj_mcp.run_mcp_server()
 
 #------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
