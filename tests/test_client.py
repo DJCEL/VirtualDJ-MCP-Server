@@ -3,7 +3,7 @@ import pytest
 from fastmcp import FastMCP, Client
 from mcp.types import TextContent
 
-from src.virtualdj_mcp.client import VirtualDJClient
+from src.virtualdj_server_mcp.virtualdj_client import VirtualDJClient
 
 
 

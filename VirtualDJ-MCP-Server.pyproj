@@ -34,16 +34,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\main.py" />
-    <Compile Include="src\virtualdj_mcp\__init__.py" />
-    <Compile Include="src\virtualdj_mcp\__main__.py" />
-    <Compile Include="src\virtualdj_mcp\config.py" />
-    <Compile Include="src\virtualdj_mcp\client.py" />
-    <Compile Include="src\virtualdj_mcp\server.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\client.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\client_config.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\client_history_files.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\client_settings.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\client_songs_database.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\client_utils.py" />
+    <Compile Include="src\virtualdj_server_mcp\virtualdj_client\__init__.py" />
+    <Compile Include="src\virtualdj_server_mcp\__init__.py" />
+    <Compile Include="src\virtualdj_server_mcp\server_mcp_config.py" />
+    <Compile Include="src\virtualdj_server_mcp\server_mcp.py" />
     <Compile Include="tests\test_client.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
-    <Folder Include="src\virtualdj_mcp\" />
+    <Folder Include="src\virtualdj_server_mcp\" />
+    <Folder Include="src\virtualdj_server_mcp\virtualdj_client\" />
     <Folder Include="tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

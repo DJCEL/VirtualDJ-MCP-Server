@@ -1,14 +1,14 @@
 import sys
 import asyncio
-from fastmcp import FastMCP
-#from mcp.server.fastmcp import FastMCP
+#from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 from rich.console import Console
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
-from .config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
-from .client import VirtualDJClient, VDJError
+from .mcp_config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
+from .virtualdj_client import VirtualDJClient
 
 console = Console(file=sys.stderr)
 
@@ -62,6 +62,9 @@ def define_mcp_tools(mcp: FastMCP, vdj_client: VirtualDJClient):
     #------------------------------------------------------------------------------------
     @mcp.tool()
     async def send_VirtualDJ(vdj_script: str) -> bool:
+        """
+        Send a command via a vdjscript to VirtualDJ
+        """
         try:
             async with vdj_client:
                 result = await vdj_client.send_async(vdj_script)
@@ -70,7 +73,6 @@ def define_mcp_tools(mcp: FastMCP, vdj_client: VirtualDJClient):
 
         except Exception as e:
             console.print(f"Error in send_VirtualDJ: {e}")
-            raise VDJError(str(e))
 
     #------------------------------------------------------------------------------------
     @mcp.tool()
@@ -88,7 +90,6 @@ def define_mcp_tools(mcp: FastMCP, vdj_client: VirtualDJClient):
 
         except Exception as e:
             console.print(f"Error in set_crossfader: {e}")
-            raise VDJError(str(e))
 #------------------------------------------------------------------------------------------------------------------------------------
 def create_mcp_server(vdj_client: VirtualDJClient):
     mcp = FastMCP("VirtualDJ-MCP-Server",
@@ -97,7 +98,6 @@ def create_mcp_server(vdj_client: VirtualDJClient):
 
     define_mcp_tools(mcp,vdj_client)
     define_mcp_routes(mcp,vdj_client)
-    #define_mcp_ressources(mcp,vdj_client) 
 
     return mcp
 #------------------------------------------------------------------------------------------------------------------------------------
@@ -145,7 +145,3 @@ def main():
         sys.exit()
 
     run_mcp_server(client)
-
-#------------------------------------------------------------------------------------------------------------------------------------
-if __name__ == "__main__":
-    main()

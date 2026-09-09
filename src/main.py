@@ -1,4 +1,4 @@
-from virtualdj_mcp.server import main
+from virtualdj_server_mcp.server_mcp import main
 
 #------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
