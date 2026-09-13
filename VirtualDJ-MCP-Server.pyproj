@@ -35,7 +35,6 @@
   <ItemGroup>
     <Compile Include="src\main.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client.py" />
-    <Compile Include="src\virtualdj_mcp_server\virtualdj_client\clientExt.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_config.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_history_files.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_settings.py" />
