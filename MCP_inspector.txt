@@ -1,6 +1,0 @@
-https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector
-Run the following command in cmd.exe
-
-npx @modelcontextprotocol/inspector
-
-
