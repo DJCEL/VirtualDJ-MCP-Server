@@ -1,14 +1,10 @@
-[build-system]
-requires = ["setuptools>=77"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "virtualdj-mcp-server"
 version = "1.1.2"
 description = "Control VirtualDJ software via a MCP server"
 readme = "README.md"
 authors = [
-    {name = "djcel"},
+     { name = "DJCEL", email = "16272026+DJCEL@users.noreply.github.com" }
 ]
 requires-python = ">=3.12"
 dependencies = [
@@ -16,6 +12,10 @@ dependencies = [
   "psutil",
   "rich",
 ]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]

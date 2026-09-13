@@ -1,0 +1,14 @@
+{
+  "servers":
+  {
+    "VirtualDJ-MCP-Server":
+    {
+      "type": "http",
+      "command": "python",
+      "args":
+      [
+        "mcp-server.py"
+      ]
+    }
+  }
+}

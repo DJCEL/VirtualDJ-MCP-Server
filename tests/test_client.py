@@ -3,11 +3,11 @@ import pytest
 from fastmcp import FastMCP, Client
 from mcp.types import TextContent
 
-from src.virtualdj_mcp_server import VirtualDJClient
+from src.virtualdj_mcp_server.virtualdj_client import VirtualDJClient
 
 
 @pytest.fixture
-def mcp_server():
+def test_mcp_server():
     mcp = FastMCP(name="TestServer")
 
     @mcp.tool()
@@ -18,8 +18,8 @@ def mcp_server():
     return mcp
 
 @pytest.mark.asyncio
-async def test_server(mcp_server:FastMCP):
-    async with Client(mcp_server) as client:
+async def test_tool(test_mcp_server):
+    async with Client(test_mcp_server) as client:
         result = await client.call_tool("test_connected")
         assert isinstance(result.content[0], TextContent)
         assert result.content[0].text == "true"

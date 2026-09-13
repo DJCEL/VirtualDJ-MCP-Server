@@ -70,7 +70,8 @@ class VirtualDJMCPServer:
     @tool
     async def send_VirtualDJ(self, vdjscript: str) -> bool:
         """
-        Send a command via a vdjscript to VirtualDJ
+        This tool sends a command to VirtualDJ via a vdjscript.
+        It enables VirtualDJ to do an action defined by the vdjscript.
         """
         try:
             async with self.vdj_client:
@@ -83,7 +84,7 @@ class VirtualDJMCPServer:
     @tool
     async def set_crossfader(self, position: float) -> bool:
         """
-        Set the crossader in VirtualDJ at position
+        This tool sets the crossfader in VirtualDJ at a certain position
         """
         position = self.slider_clamp(position)
         vdjscript = f"crossfader {position}%"
