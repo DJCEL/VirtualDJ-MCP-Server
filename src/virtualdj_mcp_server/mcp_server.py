@@ -62,14 +62,14 @@ class VirtualDJMCPServer:
     def _define_mcp_tools(self, mcp: FastMCP):
         #------------------------------------------------------------------------------------
         @mcp.tool()
-        async def send_VirtualDJ(self, vdj_script: str) -> bool:
+        async def vdjscript_send(self, vdjscript: str) -> bool:
             """
             Send a command via a vdjscript to VirtualDJ
             """
             try:
                 async with self.vdj_client:
-                    result = await self.vdj_client.send_async(vdj_script)
-                    console.print(f"vdj_client.send_async({vdj_script}) => {result}")
+                    result = await self.vdj_client.send_async(vdjscript)
+                    console.print(f"vdj_client.send_async({vdjscript}) => {result}")
                     return result
 
             except Exception as e:
