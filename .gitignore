@@ -5,7 +5,6 @@
 /.venv/
 /src/virtualdj_mcp_server.egg-info/
 uv.lock
-MCP_Inspector.txt
 
 ##########
 # Python #
