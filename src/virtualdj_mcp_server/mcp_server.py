@@ -14,22 +14,19 @@ console = Console()
 class VirtualDJMCPServer:
     def __init__(self):
         self.vdj_client = VirtualDJClient()
-        self.mcp = self._create_mcp_server()
-        
-    #------------------------------------------------------------------------------------------------------------------------------------
+        self._create_mcp_server()
+    #------------------------------------------------------------------------------------
     def _create_mcp_server(self):
-        mcp = FastMCP("VirtualDJ-MCP-Server",
+        self.mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides an API to communicate with VirtualDJ.",
                       on_duplicate="warn")
 
-        self._define_mcp_tools(mcp)
-        self._define_mcp_routes(mcp)
-
-        return mcp
-    #------------------------------------------------------------------------------------------------------------------------------------
+        self._register_tools()
+        self._register_routes()
+    #------------------------------------------------------------------------------------
     def get_mcp_server(self):
         return self.mcp
-    #------------------------------------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------
     def run_mcp_server(self):
         console.print("VirtualDJ-MCP-Server starting...")
         try:
@@ -46,48 +43,57 @@ class VirtualDJMCPServer:
             raise
         finally:
             console.print("VirtualDJ-MCP MCP Server stopped")
-    #------------------------------------------------------------------------------------------------------------------------------------
-    def _define_mcp_routes(mcp: FastMCP):
-        #------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------
+    def _register_routes(self):
+        mcp = self.mcp
+        #--------------------------------------------------------------------------------
         @mcp.custom_route("/", methods=["GET"])
         async def api_root(request: Request) -> PlainTextResponse:
-            result = PlainTextResponse("VirtualDJ-MCP-Server")
-            return result
-        #------------------------------------------------------------------------------------
+            return PlainTextResponse("VirtualDJ-MCP-Server")
+        #--------------------------------------------------------------------------------
+        @mcp.custom_route("/health", methods=["GET"])
+        async def api_health(request: Request) -> PlainTextResponse:
+            return PlainTextResponse("VirtualDJ-MCP-Server/health")
+        #--------------------------------------------------------------------------------
         @mcp.custom_route("/mcp", methods=["GET"])
         async def api_mcp(request: Request) -> PlainTextResponse:
-            result = PlainTextResponse("VirtualDJ-MCP-Server/mcp")
-            return result
-    #------------------------------------------------------------------------------------------------------------------------------------
-    def _define_mcp_tools(self, mcp: FastMCP):
-        #------------------------------------------------------------------------------------
-        @mcp.tool()
-        async def send_VirtualDJ(self, vdj_script: str) -> bool:
-            """
-            Send a command via a vdjscript to VirtualDJ
-            """
-            try:
-                async with self.vdj_client:
-                    result = await self.vdj_client.send_async(vdj_script)
-                    console.print(f"vdj_client.send_async({vdj_script}) => {result}")
-                    return result
+            return PlainTextResponse("VirtualDJ-MCP-Server/mcp")       
+    #------------------------------------------------------------------------------------
+    def _register_tools(self):
+       mcp = self.mcp
+       mcp.add_tool(self.send_VirtualDJ)
+       mcp.add_tool(self.set_crossfader)
+    #------------------------------------------------------------------------------------
+    @tool
+    async def send_VirtualDJ(self, vdj_script: str) -> bool:
+        """
+        Send a command via a vdjscript to VirtualDJ
+        """
+        try:
+            async with self.vdj_client:
+                result = await self.vdj_client.send_async(vdj_script)
+                console.print(f"vdj_client.send_async({vdj_script}) => {result}")
+                return result
 
-            except Exception as e:
-                console.print(f"Error in send_VirtualDJ: {e}")
-        #------------------------------------------------------------------------------------
-        @mcp.tool()
-        async def set_crossfader(self, position: float) -> bool:
-            position = self.slider_clamp(position)
-            vdj_script = f"crossfader {position}%"
+        except Exception as e:
+            console.print(f"Error in send_VirtualDJ: {e}")
+    #------------------------------------------------------------------------------------
+    @tool
+    async def set_crossfader(self, position: float) -> bool:
+        """
+        Set the crossader in VirtualDJ at position
+        """
+        position = self.slider_clamp(position)
+        vdj_script = f"crossfader {position}%"
 
-            try:
-                async with self.vdj_client:
-                    result = await self.vdj_client.send_async(vdj_script)
-                    console.print(f"vdj_client.send_async({vdj_script}) => {result}")
-                    return result
-            except Exception as e:
-                console.print(f"Error in set_crossfader: {e}")
-
+        try:
+            async with self.vdj_client:
+                result = await self.vdj_client.send_async(vdj_script)
+                console.print(f"vdj_client.send_async({vdj_script}) => {result}")
+                return result
+        except Exception as e:
+            console.print(f"Error in set_crossfader: {e}")
+    
     #------------------------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def _slider_clamp(x: float) -> float:

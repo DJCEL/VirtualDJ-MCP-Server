@@ -10,7 +10,7 @@ from typing import Optional
 from datetime import datetime
 
 from .client_utils import VirtualDJUtils
-from .client_config import VDJ_PROCESS_SETTINGS
+from .client_config import VDJ_XML_SETTINGS
 
 #------------------------------------------------------------------------------------
 @dataclass
@@ -745,7 +745,7 @@ class VdjSettings:
 class VirtualDJSettings():
     def __init__(self):
         self.vdj_utils = VirtualDJUtils()
-        self.SETTINGS_FILENAME = VDJ_PROCESS_SETTINGS
+        self.SETTINGS_FILENAME = VDJ_XML_SETTINGS
     #------------------------------------------------------------------------------------
     def get_local_settings_path_list(self) -> list[Path]:
         settings_path_list : list[Path]= []
@@ -789,11 +789,11 @@ class VirtualDJSettings():
             tree = ET.parse(settings_path)
         except ET.ParseError as exc:
             print(f"VirtualDJ settings reading {settings_path} => Invalid XML file")
-            self.vdj_utils.SaveClientLog(f"VirtualDJ database reading {settings_path} => Invalid XML file")
+            self.vdj_utils.save_client_log(f"VirtualDJ database reading {settings_path} => Invalid XML file")
             return None
         except OSError as exc:
             print(f"VirtualDJ settings reading {settings_path} => Cannot read the file")
-            self.vdj_utils.SaveClientLog(f"VirtualDJ settings reading {settings_path} => Cannot read the file")
+            self.vdj_utils.save_client_log(f"VirtualDJ settings reading {settings_path} => Cannot read the file")
             return None
 
         root = tree.getroot()
@@ -801,7 +801,7 @@ class VirtualDJSettings():
         root_attrib = root.attrib
         if root_tag != "settings":
             print(f"VirtualDJ settings reading {settings_path} => Not a VirtualDJ settings file")
-            self.vdj_utils.SaveClientLog(f"VirtualDJ settings reading {settings_path} => Not a VirtualDJ settings file")
+            self.vdj_utils.save_client_log(f"VirtualDJ settings reading {settings_path} => Not a VirtualDJ settings file")
             return None
 
 
@@ -906,6 +906,6 @@ class VirtualDJSettings():
                         settings.skin.skinStarterTip = self._to_int(subchild_text)
                 else:
                     print(f"child_tag < {child_tag} > not defined")
-                    self.vdj_utils.SaveClientLog(f"child_tag < {child_tag} > not defined")
+                    self.vdj_utils.save_client_log(f"child_tag < {child_tag} > not defined")
             
         return settings

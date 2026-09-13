@@ -12,7 +12,9 @@ VDJ_NETWORK_CONTROL_TIMEOUT = 10.0  # default (int): 10 seconds
 VDJ_PROCESS_NAME = "virtualdj"
 VDJ_PROCESS_PATH_WINDOWS = r"C:\Program Files\VirtualDJ\virtualdj.exe"
 VDJ_PROCESS_PATH_MAC = "/Applications/VirtualDJ.app"
-VDJ_PROCESS_SETTINGS = "settings.xml"
+
+# VirtualDJ - Settings
+VDJ_XML_SETTINGS = "settings.xml"
 
 # VirtualDJ - Songs database
 VDJ_XML_DATABASE_NAME = "database.xml"
