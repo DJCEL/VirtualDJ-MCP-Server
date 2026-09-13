@@ -17,8 +17,13 @@ class VirtualDJMCPServer:
         self._create_mcp_server()
     #------------------------------------------------------------------------------------
     def _create_mcp_server(self):
+<<<<<<< HEAD
         self.mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides an API to communicate with VirtualDJ.",
+=======
+        mcp = FastMCP("VirtualDJ-MCP-Server",
+                      instructions="Provides a bridge to communicate with VirtualDJ.",
+>>>>>>> e0834f213470e8b8592cb60a03b6fa36afe8c26d
                       on_duplicate="warn")
 
         self._register_tools()
@@ -57,6 +62,7 @@ class VirtualDJMCPServer:
         #--------------------------------------------------------------------------------
         @mcp.custom_route("/mcp", methods=["GET"])
         async def api_mcp(request: Request) -> PlainTextResponse:
+<<<<<<< HEAD
             return PlainTextResponse("VirtualDJ-MCP-Server/mcp")       
     #------------------------------------------------------------------------------------
     def _register_tools(self):
@@ -74,6 +80,23 @@ class VirtualDJMCPServer:
                 result = await self.vdj_client.send_async(vdj_script)
                 console.print(f"vdj_client.send_async({vdj_script}) => {result}")
                 return result
+=======
+            result = PlainTextResponse("VirtualDJ-MCP-Server/mcp")
+            return result
+    #------------------------------------------------------------------------------------------------------------------------------------
+    def _define_mcp_tools(self, mcp: FastMCP):
+        #------------------------------------------------------------------------------------
+        @mcp.tool()
+        async def vdjscript_send(self, vdjscript: str) -> bool:
+            """
+            Send a command via a vdjscript to VirtualDJ
+            """
+            try:
+                async with self.vdj_client:
+                    result = await self.vdj_client.send_async(vdjscript)
+                    console.print(f"vdj_client.send_async({vdjscript}) => {result}")
+                    return result
+>>>>>>> e0834f213470e8b8592cb60a03b6fa36afe8c26d
 
         except Exception as e:
             console.print(f"Error in send_VirtualDJ: {e}")
