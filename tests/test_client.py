@@ -6,7 +6,6 @@ from mcp.types import TextContent
 from src.virtualdj_mcp_server import VirtualDJMCPServer
 
 
-
 @pytest.fixture
 def mcp_server():
     mcp = FastMCP(name="TestServer")
