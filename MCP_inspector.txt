@@ -1,1 +1,4 @@
 npx @modelcontextprotocol/inspector
+
+
+https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector

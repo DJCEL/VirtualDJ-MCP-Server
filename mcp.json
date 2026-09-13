@@ -3,10 +3,13 @@
   {
     "virtualdj-mcp-server":
     {
-      "command": "python",
+	  "type": "stdio",
+      "command": "uv",
       "args":
       [
-        "-m",
+        "--directory",
+		"D:\\GitHub\\VirtualDJ-MCP-Server\\src",
+		"run",
         "main.py"
       ]
     }
