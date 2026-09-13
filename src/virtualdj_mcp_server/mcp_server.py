@@ -68,34 +68,17 @@ class VirtualDJMCPServer:
        mcp.add_tool(self.set_crossfader)
     #------------------------------------------------------------------------------------
     @tool
-    async def send_VirtualDJ(self, vdj_script: str) -> bool:
+    async def send_VirtualDJ(self, vdjscript: str) -> bool:
         """
         Send a command via a vdjscript to VirtualDJ
         """
         try:
             async with self.vdj_client:
-                result = await self.vdj_client.send_async(vdj_script)
-                console.print(f"vdj_client.send_async({vdj_script}) => {result}")
+                result = await self.vdj_client.send_async(vdjscript)
+                console.print(f"vdj_client.send_async({vdjscript}) => {result}")
                 return result
-            result = PlainTextResponse("VirtualDJ-MCP-Server/mcp")
-            return result
         except Exception as e:
             console.print(f"Error in send_VirtualDJ: {e}")
-    #------------------------------------------------------------------------------------------------------------------------------------
-    def _define_mcp_tools(self, mcp: FastMCP):
-        #------------------------------------------------------------------------------------
-        @mcp.tool()
-        async def vdjscript_send(self, vdjscript: str) -> bool:
-            """
-            Send a command via a vdjscript to VirtualDJ
-            """
-            try:
-                async with self.vdj_client:
-                    result = await self.vdj_client.send_async(vdjscript)
-                    console.print(f"vdj_client.send_async({vdjscript}) => {result}")
-                    return result
-            except Exception as e:
-                console.print(f"Error in send_VirtualDJ: {e}")
     #------------------------------------------------------------------------------------
     @tool
     async def set_crossfader(self, position: float) -> bool:
@@ -103,12 +86,12 @@ class VirtualDJMCPServer:
         Set the crossader in VirtualDJ at position
         """
         position = self.slider_clamp(position)
-        vdj_script = f"crossfader {position}%"
+        vdjscript = f"crossfader {position}%"
 
         try:
             async with self.vdj_client:
-                result = await self.vdj_client.send_async(vdj_script)
-                console.print(f"vdj_client.send_async({vdj_script}) => {result}")
+                result = await self.vdj_client.send_async(vdjscript)
+                console.print(f"vdj_client.send_async({vdjscript}) => {result}")
                 return result
         except Exception as e:
             console.print(f"Error in set_crossfader: {e}")
