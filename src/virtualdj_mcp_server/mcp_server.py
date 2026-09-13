@@ -63,6 +63,7 @@ class VirtualDJMCPServer:
     #------------------------------------------------------------------------------------
     def _register_tools(self):
        mcp = self.mcp
+       #--------------------------------------------------------------------------------
        mcp.add_tool(self.send_VirtualDJ)
        mcp.add_tool(self.set_crossfader)
     #------------------------------------------------------------------------------------
@@ -78,8 +79,8 @@ class VirtualDJMCPServer:
                 return result
             result = PlainTextResponse("VirtualDJ-MCP-Server/mcp")
             return result
-         except Exception as e:
-                console.print(f"Error in send_VirtualDJ: {e}")
+        except Exception as e:
+            console.print(f"Error in send_VirtualDJ: {e}")
     #------------------------------------------------------------------------------------------------------------------------------------
     def _define_mcp_tools(self, mcp: FastMCP):
         #------------------------------------------------------------------------------------
