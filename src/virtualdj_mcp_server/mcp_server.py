@@ -19,7 +19,7 @@ class VirtualDJMCPServer:
     #------------------------------------------------------------------------------------------------------------------------------------
     def _create_mcp_server(self):
         mcp = FastMCP("VirtualDJ-MCP-Server",
-                      instructions="Provides an API to communicate with VirtualDJ.",
+                      instructions="Provides a bridge to communicate with VirtualDJ.",
                       on_duplicate="warn")
 
         self._define_mcp_tools(mcp)
