@@ -17,13 +17,8 @@ class VirtualDJMCPServer:
         self._create_mcp_server()
     #------------------------------------------------------------------------------------
     def _create_mcp_server(self):
-<<<<<<< HEAD
         self.mcp = FastMCP("VirtualDJ-MCP-Server",
-                      instructions="Provides an API to communicate with VirtualDJ.",
-=======
-        mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides a bridge to communicate with VirtualDJ.",
->>>>>>> e0834f213470e8b8592cb60a03b6fa36afe8c26d
                       on_duplicate="warn")
 
         self._register_tools()
@@ -34,11 +29,13 @@ class VirtualDJMCPServer:
     #------------------------------------------------------------------------------------
     def run_mcp_server(self):
         console.print("VirtualDJ-MCP-Server starting...")
+        mcp = self.mcp
+
         try:
             if MCP_SERVER_TRANSPORT == "stdio":
-                self.mcp.run()
+                mcp.run()
             elif MCP_SERVER_TRANSPORT == "http":
-                self.mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
+                mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
             else:
                 console.print(f"MCP_SERVER_TRANSPORT error.")
         except KeyboardInterrupt:
@@ -62,7 +59,6 @@ class VirtualDJMCPServer:
         #--------------------------------------------------------------------------------
         @mcp.custom_route("/mcp", methods=["GET"])
         async def api_mcp(request: Request) -> PlainTextResponse:
-<<<<<<< HEAD
             return PlainTextResponse("VirtualDJ-MCP-Server/mcp")       
     #------------------------------------------------------------------------------------
     def _register_tools(self):
@@ -80,9 +76,10 @@ class VirtualDJMCPServer:
                 result = await self.vdj_client.send_async(vdj_script)
                 console.print(f"vdj_client.send_async({vdj_script}) => {result}")
                 return result
-=======
             result = PlainTextResponse("VirtualDJ-MCP-Server/mcp")
             return result
+         except Exception as e:
+                console.print(f"Error in send_VirtualDJ: {e}")
     #------------------------------------------------------------------------------------------------------------------------------------
     def _define_mcp_tools(self, mcp: FastMCP):
         #------------------------------------------------------------------------------------
@@ -96,10 +93,8 @@ class VirtualDJMCPServer:
                     result = await self.vdj_client.send_async(vdjscript)
                     console.print(f"vdj_client.send_async({vdjscript}) => {result}")
                     return result
->>>>>>> e0834f213470e8b8592cb60a03b6fa36afe8c26d
-
-        except Exception as e:
-            console.print(f"Error in send_VirtualDJ: {e}")
+            except Exception as e:
+                console.print(f"Error in send_VirtualDJ: {e}")
     #------------------------------------------------------------------------------------
     @tool
     async def set_crossfader(self, position: float) -> bool:
@@ -116,7 +111,6 @@ class VirtualDJMCPServer:
                 return result
         except Exception as e:
             console.print(f"Error in set_crossfader: {e}")
-    
     #------------------------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def _slider_clamp(x: float) -> float:
