@@ -82,7 +82,7 @@ class VirtualDJMCPServer:
             console.print(f"Error in send_vdjscript: {e}")
     #------------------------------------------------------------------------------------
     @tool
-    async def get_vdjscript(self, vdjscript: str) -> bool:
+    async def get_vdjscript(self, vdjscript: str) -> str:
         """
         This tool queries VirtualDJ via a vdjscript.
         It enables to get and extract data from VirtualDJ.
