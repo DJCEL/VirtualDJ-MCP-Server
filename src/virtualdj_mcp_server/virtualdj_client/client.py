@@ -6,7 +6,7 @@ __version__ = "1.0.24"
 import asyncio
 from typing import Optional, Literal
 from dataclasses import dataclass
-from pydantic import BaseModel
+#from pydantic import BaseModel
 
 from .client_http import VirtualDJClientHttp, VdjResponse
 from .client_utils import VirtualDJUtils
@@ -19,7 +19,7 @@ class VdjDeck:
     id: int | None = None
 #------------------------------------------------------------------------------------------------------------------------------------
 @dataclass
-class VdjDeckData(BaseModel):
+class VdjDeckData():
     Filepath: Optional[str] = None
     Filesize: Optional[int] = None
     Artist: Optional[str] = None
