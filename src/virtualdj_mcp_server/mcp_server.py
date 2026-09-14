@@ -89,8 +89,8 @@ class VirtualDJMCPServer:
         """
         try:
             async with self.vdj_client:
-                result = await self.vdj_client.send_async(vdjscript)
-                console.print(f"vdj_client.send_async({vdjscript}) => {result}")
+                result = await self.vdj_client.get_async(vdjscript)
+                console.print(f"vdj_client.get_async({vdjscript}) => {result}")
                 return result
         except Exception as e:
             console.print(f"Error in get_vdjscript: {e}")
