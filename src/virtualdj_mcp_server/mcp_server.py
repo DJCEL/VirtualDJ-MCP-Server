@@ -115,7 +115,7 @@ class VirtualDJMCPServer:
     @tool
     async def set_crossfader(self, position: float) -> bool:
         """
-        This tool sets the crossfader in VirtualDJ at a certain position
+        This tool sets the crossfader in VirtualDJ at a certain position (between 0 and 100)
         """
         if not 0.0 <= position <= 100.0:
             raise ValueError("Crossfader position must be between 0 and 100")
