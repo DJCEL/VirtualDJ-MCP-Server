@@ -20,6 +20,7 @@ class VdjDeck:
 #------------------------------------------------------------------------------------------------------------------------------------
 @dataclass
 class VdjDeckData():
+    """ Data relative to a VirtualDJ deck """
     Filepath: Optional[str] = None
     Filesize: Optional[int] = None
     Artist: Optional[str] = None
