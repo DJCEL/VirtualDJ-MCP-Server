@@ -1,7 +1,4 @@
 mcp
-asyncio
 rich
 httpx
 psutil
-
-
