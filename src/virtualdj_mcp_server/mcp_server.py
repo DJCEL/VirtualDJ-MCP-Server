@@ -117,6 +117,8 @@ class VirtualDJMCPServer:
         """
         This tool sets the crossfader in VirtualDJ at a certain position
         """
+        if not 0.0 <= position <= 100.0:
+            raise ValueError("Crossfader position must be between 0 and 100")
         vdjscript = f"crossfader {position}%"
 
         try:
