@@ -80,6 +80,7 @@ class VirtualDJMCPServer:
                 return result
         except Exception as e:
             console.print(f"Error in send_vdjscript: {e}")
+            raise
     #------------------------------------------------------------------------------------
     @tool
     async def get_vdjscript(self, vdjscript: str) -> str:
@@ -94,6 +95,7 @@ class VirtualDJMCPServer:
                 return result
         except Exception as e:
             console.print(f"Error in get_vdjscript: {e}")
+            raise
     #------------------------------------------------------------------------------------
     @tool
     async def play(self, deck_ref:str) -> bool:
@@ -108,6 +110,7 @@ class VirtualDJMCPServer:
                 return result
         except Exception as e:
             console.print(f"Error in play: {e}")
+            raise
     #------------------------------------------------------------------------------------
     @tool
     async def set_crossfader(self, position: float) -> bool:
@@ -123,3 +126,4 @@ class VirtualDJMCPServer:
                 return result
         except Exception as e:
             console.print(f"Error in set_crossfader: {e}")
+            raise
