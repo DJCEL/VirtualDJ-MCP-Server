@@ -22,9 +22,9 @@ __all__ = [
     "VirtualDJSettings",
     "VirtualDJSongsDatabase",
     "VirtualDJHistoryFiles",
-    "__client_version__"
+    "__client_version__",
     "__client_utils_version__",
     "__client_songs_database_version__",
     "__client_history_files_version__",
-    "__client_settings_version__",
+    "__client_settings_version__"
 ]
