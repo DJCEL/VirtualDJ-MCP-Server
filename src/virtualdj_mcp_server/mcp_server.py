@@ -1,3 +1,8 @@
+#------------------------------------------------------------------------------------
+# VirtualDJ MCP Server
+#------------------------------------------------------------------------------------
+__version__ = "1.0.12"
+
 from fastmcp import FastMCP
 from fastmcp.tools import tool
 from rich.console import Console
