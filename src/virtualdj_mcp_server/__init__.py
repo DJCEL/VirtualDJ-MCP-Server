@@ -1,4 +1,4 @@
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 from .mcp_server import VirtualDJMCPServer
 from .mcp_server import __version__ as __virtualdjmcpserver_version__
