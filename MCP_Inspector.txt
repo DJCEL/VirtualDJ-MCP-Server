@@ -1,6 +1,10 @@
 MCP Inspector
 
+Interactive developer tooling for testing and debugging MCP servers, in the browser, on the command line, and in the terminal
+
 https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector
+
+How to launch it:
 
 1) Install the latest version of Node.js: https://nodejs.org/en/download
 2) Run the following command in cmd.exe:
