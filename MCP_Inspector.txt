@@ -1,5 +1,4 @@
 https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector
 1) Instal last version of Node.js: https://nodejs.org/en/download
 2) Run the following command in cmd.exe:
-
 npx @modelcontextprotocol/inspector
