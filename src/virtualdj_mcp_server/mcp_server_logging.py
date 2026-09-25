@@ -1,6 +1,8 @@
 import logging
 from typing import Literal
 import os
+from rich.console import Console
+from rich.logging import RichHandler
 
 from .mcp_server_config import MCP_SERVER_DEBUG, MCP_SERVER_LOG_FOLDER, MCP_SERVER_LOG_FILENAME
 
@@ -17,6 +19,10 @@ def configure_mcp_server_log(level: Literal["DEBUG","INFO","WARNING","ERROR","CR
             formatter = logging.Formatter(FORMAT)
             file_handler.setFormatter(formatter)
             handlers.append(file_handler)
+
+            console_handler = RichHandler(console=Console(stderr=True), rich_tracebacks=True)
+
+            handlers.append(console_handler)
             
             if not handlers:
                handlers.append(logging.StreamHandler())
