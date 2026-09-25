@@ -77,6 +77,8 @@ class VirtualDJMCPServer:
         """
         This tool sends a command to VirtualDJ via a vdjscript.
         It enables VirtualDJ to do an action defined by the vdjscript.
+        Args:
+          vdjscript: the vdjscript to use
         """
         try:
             async with self.vdj_client:
@@ -92,6 +94,8 @@ class VirtualDJMCPServer:
         """
         This tool queries VirtualDJ via a vdjscript.
         It enables to get and extract data from VirtualDJ.
+        Args:
+          vdjscript: the vdjscript to use
         """
         try:
             async with self.vdj_client:
@@ -103,9 +107,11 @@ class VirtualDJMCPServer:
             raise
     #------------------------------------------------------------------------------------
     @tool
-    async def play(self, deck_ref:str) -> bool:
+    async def play(self, deck_ref: str) -> bool:
         """
         This tool plays a song on a defined deck
+        Args:
+          deck_ref: the deck to use (left, right, ...)
         """
         vdjscript = f"deck {deck_ref} play"
         try:
