@@ -25,7 +25,8 @@ def configure_mcp_server_log(level: Literal["DEBUG","INFO","WARNING","ERROR","CR
             handlers.append(console_handler)
             
             if not handlers:
-               handlers.append(logging.StreamHandler())
+               stream_handler = logging.StreamHandler()
+               handlers.append(stream_handler)
 
             logging.basicConfig(filename=filepath, level=level, format=FORMAT)
 
