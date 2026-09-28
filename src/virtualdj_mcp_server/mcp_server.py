@@ -10,6 +10,7 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 #from starlette.applications import Starlette
 #from starlette.routing import Mount
+#from fastapi import FastAPI
 
 from .mcp_server_config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
 from .virtualdj_client import VirtualDJClient
@@ -58,7 +59,10 @@ class VirtualDJMCPServer:
             console.print("VirtualDJ-MCP MCP Server stopped") 
     #------------------------------------------------------------------------------------
     def _register_routes(self, mcp: FastMCP):
-        """ MCP endpoint is at /mcp """
+        """
+        MCP endpoint is at /mcp
+        MCP_PATH = "/mcp"
+        """
         @mcp.custom_route("/health", methods=["GET"])
         async def health_check(request: Request) -> PlainTextResponse:
             return PlainTextResponse("VirtualDJ-MCP-Server/health: OK")   
