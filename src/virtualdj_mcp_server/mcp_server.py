@@ -31,7 +31,7 @@ class VirtualDJMCPServer:
         """ 
         Create and configure the MCP Server
 
-        It is possible to add Authorization in FastMCP()
+        It is possible to add <auth> in FastMCP() for authorization 
         """
         mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides a bridge to communicate with VirtualDJ.",
