@@ -38,7 +38,12 @@ class VirtualDJMCPServer:
         return self.mcp
     #------------------------------------------------------------------------------------
     def run_mcp_server(self):
-    """ if used with async, replace self.mcp.run() by self.mcp.run_async() """
+        """
+        Run the MCP Server
+Server
+        If used with async, replace self.mcp.run() by self.mcp.run_async()
+        It is possible to add stateless_http=True in run()
+        """
         console.print("VirtualDJ-MCP-Server starting...")
  
         try:
