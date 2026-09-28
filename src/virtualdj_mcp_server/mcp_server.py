@@ -56,6 +56,7 @@ class VirtualDJMCPServer:
             console.print("VirtualDJ-MCP MCP Server stopped") 
     #------------------------------------------------------------------------------------
     def _register_routes(self, mcp: FastMCP):
+        """ MCP endpoint is at /mcp """
         @mcp.custom_route("/health", methods=["GET"])
         async def health_check(request: Request) -> PlainTextResponse:
             return PlainTextResponse("VirtualDJ-MCP-Server/health: OK")   
