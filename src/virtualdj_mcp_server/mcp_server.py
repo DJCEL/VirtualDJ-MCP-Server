@@ -5,12 +5,15 @@ __version__ = "1.0.13"
 
 from fastmcp import FastMCP
 from fastmcp.tools import tool
+#from fastmcp.server.auth import StaticTokenVerifier
 from rich.console import Console
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 #from starlette.applications import Starlette
 #from starlette.routing import Mount
 #from fastapi import FastAPI
+
+
 
 from .mcp_server_config import MCP_SERVER_TRANSPORT, MCP_SERVER_HOST, MCP_SERVER_PORT, MCP_SERVER_DEFAULT_PATH
 from .virtualdj_client import VirtualDJClient
@@ -25,6 +28,11 @@ class VirtualDJMCPServer:
         self.mcp = self._create_mcp_server()
     #------------------------------------------------------------------------------------
     def _create_mcp_server(self):
+        """ 
+        Create and configure the MCP Server
+
+        It is possible to add Authorization in FastMCP()
+        """
         mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides a bridge to communicate with VirtualDJ.",
                       on_duplicate="warn")
