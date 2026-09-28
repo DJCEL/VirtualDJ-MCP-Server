@@ -63,11 +63,7 @@ class VirtualDJMCPServer:
         #--------------------------------------------------------------------------------
         @mcp.custom_route("/health", methods=["GET"])
         async def health_check(request: Request) -> PlainTextResponse:
-            return PlainTextResponse("VirtualDJ-MCP-Server/health: OK")
-        #--------------------------------------------------------------------------------
-        @mcp.custom_route("/mcp", methods=["GET"])
-        async def api_mcp(request: Request) -> PlainTextResponse:
-            return PlainTextResponse("VirtualDJ-MCP-Server/mcp")       
+            return PlainTextResponse("VirtualDJ-MCP-Server/health: OK")   
     #------------------------------------------------------------------------------------
     def _register_tools(self, mcp: FastMCP):
        mcp.add_tool(self.send_vdjscript)
