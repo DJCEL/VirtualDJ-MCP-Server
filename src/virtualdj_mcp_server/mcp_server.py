@@ -35,6 +35,7 @@ class VirtualDJMCPServer:
         return self.mcp
     #------------------------------------------------------------------------------------
     def run_mcp_server(self):
+    """ if used with async, replace self.mcp.run() by self.mcp.run_async() """
         console.print("VirtualDJ-MCP-Server starting...")
  
         try:
