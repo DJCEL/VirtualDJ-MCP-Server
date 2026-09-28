@@ -77,8 +77,12 @@ class VirtualDJMCPServer:
         """
         This tool sends a command to VirtualDJ via a vdjscript.
         It enables VirtualDJ to do an action defined by the vdjscript.
+
         Args:
-          vdjscript: the vdjscript to use
+          vdjscript (a string): the vdjscript to use
+
+        Returns:
+           a boolean. True if the command was well executed, False otherwise
         """
         try:
             async with self.vdj_client:
@@ -94,8 +98,12 @@ class VirtualDJMCPServer:
         """
         This tool queries VirtualDJ via a vdjscript.
         It enables to get and extract data from VirtualDJ.
+
         Args:
           vdjscript: the vdjscript to use
+
+        Returns:
+          a string with the result of the query
         """
         try:
             async with self.vdj_client:
