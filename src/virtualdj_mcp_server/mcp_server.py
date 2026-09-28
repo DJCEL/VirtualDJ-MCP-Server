@@ -32,7 +32,7 @@ class VirtualDJMCPServer:
         Create and configure the MCP Server
 
         It is possible to add <auth> in FastMCP() for authorization 
-        app = mcp.http_app()
+        app = mcp.http_app(host_origin_protection=True)
         """
         mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides a bridge to communicate with VirtualDJ.",
