@@ -62,7 +62,7 @@ class VirtualDJMCPServer:
             return PlainTextResponse("VirtualDJ-MCP-Server")
         #--------------------------------------------------------------------------------
         @mcp.custom_route("/health", methods=["GET"])
-        async def api_health(request: Request) -> PlainTextResponse:
+        async def health_check(request: Request) -> PlainTextResponse:
             return PlainTextResponse("VirtualDJ-MCP-Server/health")
         #--------------------------------------------------------------------------------
         @mcp.custom_route("/mcp", methods=["GET"])
