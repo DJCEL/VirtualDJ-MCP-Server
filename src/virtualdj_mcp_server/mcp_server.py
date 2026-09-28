@@ -58,9 +58,7 @@ Server
         try:
             if MCP_SERVER_TRANSPORT == "stdio":
                 self.mcp.run()
-            elif MCP_SERVER_TRANSPORT == "http":
-                self.mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
-            elif MCP_SERVER_TRANSPORT == "streamable-http":
+            elif MCP_SERVER_TRANSPORT == "http" or MCP_SERVER_TRANSPORT == "streamable-http":
                 self.mcp.run(transport=MCP_SERVER_TRANSPORT.lower(), host=MCP_SERVER_HOST, port=MCP_SERVER_PORT, path=MCP_SERVER_DEFAULT_PATH)
             else:
                 console.print(f"MCP_SERVER_TRANSPORT error.")
