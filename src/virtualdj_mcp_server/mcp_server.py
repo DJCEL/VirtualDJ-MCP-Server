@@ -31,7 +31,7 @@ class VirtualDJMCPServer:
         """ 
         Create and configure the MCP Server. Communication uses JSON-RPC.
         It is possible to add <auth> in FastMCP() for authorization 
-        ASGI application : app = mcp.http_app(host_origin_protection=True)
+        For ASGI application, use app = mcp.http_app(host_origin_protection=True)
         """
         mcp = FastMCP("VirtualDJ-MCP-Server",
                       instructions="Provides a bridge to communicate with VirtualDJ.",
