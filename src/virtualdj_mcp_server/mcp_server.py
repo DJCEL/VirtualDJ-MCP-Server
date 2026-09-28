@@ -29,8 +29,7 @@ class VirtualDJMCPServer:
     #------------------------------------------------------------------------------------
     def _create_mcp_server(self):
         """ 
-        Create and configure the MCP Server. Communication uses JSON-RPC
-
+        Create and configure the MCP Server. Communication uses JSON-RPC.
         It is possible to add <auth> in FastMCP() for authorization 
         ASGI application : app = mcp.http_app(host_origin_protection=True)
         """
