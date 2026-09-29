@@ -91,7 +91,7 @@ class VirtualDJMCPServer:
        mcp.add_tool(self.set_crossfader)
     #------------------------------------------------------------------------------------
     @tool
-    async def is_virtualdj_running(self) -> bool:
+    def is_virtualdj_running(self) -> bool:
         """
         This tool enables to know if VirtualDJ is running
          
@@ -99,15 +99,14 @@ class VirtualDJMCPServer:
             True if VirtualDJ is running, False otherwise
         """
         try:
-            async with self.vdj_client:
-                result = self.vdj_client.is_app_running()
-                strMsgLog = f"vdj_client.is_app_running() => {result}"
-                self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
-                return result
+            result = self.vdj_client.is_app_running()
+            strMsgLog = f"vdj_client.is_app_running() => {result}"
+            self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
+            return result
         except Exception as e:
-                    strMsgLog = f"Error in is_virtualdj_running: {e}"
-                    self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
-                    return False
+            strMsgLog = f"Error in is_virtualdj_running: {e}"
+            self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return False
     #------------------------------------------------------------------------------------
     @tool
     async def send_vdjscript(self, vdjscript: str) -> bool:

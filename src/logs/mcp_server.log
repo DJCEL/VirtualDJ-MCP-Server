@@ -1,3 +1,6 @@
-2026/09/29 23:10:37 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server starting...
-2026/09/29 23:10:37 - INFO - [virtualdj_mcp_server.mcp_server] Press CTRL+C to shutdown the MCP Server
-2026/09/29 23:21:40 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left play) => True
+2026/09/29 23:42:30 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server starting...
+2026/09/29 23:42:30 - INFO - [virtualdj_mcp_server.mcp_server] Press CTRL+C to shutdown the MCP Server
+2026/09/29 23:45:17 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP MCP Server stopped
+2026/09/29 23:45:22 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server starting...
+2026/09/29 23:45:22 - INFO - [virtualdj_mcp_server.mcp_server] Press CTRL+C to shutdown the MCP Server
+2026/09/29 23:45:33 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.is_app_running() => True
