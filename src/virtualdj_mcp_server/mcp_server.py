@@ -55,7 +55,6 @@ class VirtualDJMCPServer:
         It is possible to add stateless_http=True in run()
         """
         self.mcp_log.save_log(msg="VirtualDJ-MCP-Server starting...", parent_name=__name__, level="INFO")
-        self.mcp_log.save_log(msg="Press CTRL+C to shutdown the MCP Server", parent_name=__name__, level="INFO")
  
         try:
             if MCP_SERVER_TRANSPORT == "stdio":
