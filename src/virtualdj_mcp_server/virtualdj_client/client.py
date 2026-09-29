@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------------
 # VirtualDJ Client
 #------------------------------------------------------------------------------------
-__version__ = "1.0.29"
+__version__ = "1.0.31"
 
 import asyncio
 import time
@@ -9,6 +9,7 @@ from typing import Optional, Literal
 from dataclasses import dataclass
 from datetime import datetime,timedelta
 
+from .client_logging import VdjClientLog
 from .client_http import VirtualDJClientHttp, VdjResponse
 from .client_utils import VirtualDJUtils
 from .client_settings import VirtualDJSettings, VdjSettings
@@ -21,6 +22,7 @@ class VdjDeck:
 #------------------------------------------------------------------------------------------------------------------------------------
 @dataclass
 class VdjDeckSong:
+    IsLoaded: Optional[bool] = None
     Filepath: Optional[str] = None
     Filesize: Optional[int] = None
     IsVideo: Optional[bool] = None
@@ -46,9 +48,10 @@ class VdjDeckSong:
 #------------------------------------------------------------------------------------------------------------------------------------
 @dataclass
 class VdjDeckEngine:
+    IsLoaded: Optional[bool] = None
     HasError: Optional[str] = None
     IsPfl: Optional[bool] = None
-    IsPlaying: Optional[bool] = None
+    IsPlaying: Optional[bool] = None    
     IsAudible: Optional[bool] = None
     IsLooping: Optional[bool] = None
     IsReverse: Optional[bool] = None
@@ -212,10 +215,11 @@ class VdjVideo:
 
 #------------------------------------------------------------------------------------------------------------------------------------
 class VirtualDJClient():
-    def __init__(self):
-        self.vdj_client = VirtualDJClientHttp()
-        self.vdj_utils = VirtualDJUtils()
-        self.vdj_settings = VirtualDJSettings()
+    def __init__(self, controller = None):
+        self.vdj_client_log = VdjClientLog(controller,__name__)
+        self.vdj_client_http = VirtualDJClientHttp(controller)
+        self.vdj_utils = VirtualDJUtils(controller)
+        self.vdj_settings = VirtualDJSettings(controller)
     #------------------------------------------------------------------------------------
     async def __aenter__(self):
         return self
@@ -229,14 +233,14 @@ class VirtualDJClient():
         """ 
         Check if Network Control Plugin is responding 
         """
-        vdj_response = await self.vdj_client.query("get_version")
+        vdj_response = await self.vdj_client_http.query("get_version")
         status = vdj_response.status
         status_code = vdj_response.status_code
         result = vdj_response.result
         if status == "ok":
            return True
         else:
-            self.vdj_utils.save_client_log(f"HTTP {status_code}: {status} / {result}")
+            self.vdj_client_log.save_client_log(msg=f"HTTP {status_code}: {status} / {result}", parent_name=__name__,level="ERROR")
             return False
     #------------------------------------------------------------------------------------
     #  Launch / Quit VirtualDJ
@@ -278,7 +282,7 @@ class VirtualDJClient():
 
         checkUpdates = self.get_checkUpdates()
         if checkUpdates:
-            self.vdj_utils.save_client_log(f"VirtualDJ checkUpdates option => {checkUpdates}")
+            self.vdj_client_log.save_client_log(msg=f"VirtualDJ checkUpdates option => {checkUpdates}",parent_name=__name__,level="INFO")
             self.set_checkUpdates('off')
 
         bRes = self.vdj_utils.launch_virtualdj_software()
@@ -313,14 +317,14 @@ class VirtualDJClient():
 
         is_vdj_security = await self.get_loadSecurity_async()
         if is_vdj_security:
-            self.vdj_utils.save_client_log("VirtualDJ => loadSecurity option is activated")
+            self.vdj_client_log.save_client_log(msg="VirtualDJ => loadSecurity option is activated",parent_name=__name__,level="INFO")
         else:
-            self.vdj_utils.save_client_log("VirtualDJ => loadSecurity option is disable")
+            self.vdj_client_log.save_client_log(msg="VirtualDJ => loadSecurity option is disable",parent_name=__name__,level="INFO")
 
         if is_vdj_security and force_close:
             result = await self.set_loadSecurity_async("off")
             if result == True:
-                self.vdj_utils.save_client_log("VirtualDJ => loadSecurity option is now disable")
+                self.vdj_client_log.save_client_log(msg="VirtualDJ => loadSecurity option is now disable",parent_name=__name__,level="INFO")
 
 
         close = await self.send_async("close")
@@ -336,28 +340,28 @@ class VirtualDJClient():
         """ 
         Query VirtualDJ with a vdjscript 
         """
-        vdj_response = await self.vdj_client.query(vdjscript)
+        vdj_response = await self.vdj_client_http.query(vdjscript)
         status = vdj_response.status
         status_code = vdj_response.status_code
         result = vdj_response.result
         if status == "ok":
-            #self.vdj_utils.save_client_log(f"HTTP {status_code}: {status} / {result}")
+            #self.vdj_client_log.save_client_log(msg=f"HTTP {status_code}: {status} / {result} with query={vdjscript}",parent_name=__name__,level="DEBUG")
             return result
         else:
-            self.vdj_utils.save_client_log(f"HTTP {status_code}: {status} / {result} with query={vdjscript}")
+            self.vdj_client_log.save_client_log(msg=f"HTTP {status_code}: {status} / {result} with query={vdjscript}",parent_name=__name__,level="ERROR")
             return result           
     #------------------------------------------------------------------------------------
     async def send_async(self, vdjscript: str) -> bool:
         """ Execute a vdjscript and return status """
-        vdj_response = await self.vdj_client.execute(vdjscript)
+        vdj_response = await self.vdj_client_http.execute(vdjscript)
         status = vdj_response.status
         status_code = vdj_response.status_code
         result = vdj_response.result
         if status == "ok":
-            #self.vdj_utils.save_client_log(f"HTTP {status_code}: {status} / {result}")
+            self.vdj_client_log.save_client_log(msg=f"HTTP {status_code}: {status} / {result} with execute={vdjscript}",parent_name=__name__,level="DEBUG")
             return (result.lower() == "true")
         else:
-            self.vdj_utils.save_client_log(f"HTTP {status_code}: {status} / {result} with execute={vdjscript}")
+            self.vdj_client_log.save_client_log(msg=f"HTTP {status_code}: {status} / {result} with execute={vdjscript}",parent_name=__name__,level="ERROR")
             return False
     #------------------------------------------------------------------------------------
     #  Vdjscript Helper
@@ -533,7 +537,7 @@ class VirtualDJClient():
     #------------------------------------------------------------------------------------
     #  Get_Result / Get_Result_Deck
     #------------------------------------------------------------------------------------  
-    async def _get_result(self, vdjscript: str) -> str:
+    async def _get_result(self, vdjscript: str) -> Optional[str]:
         result = await self.get_async(vdjscript)
         len_result = len(result)
         if len_result >= 5:
@@ -543,7 +547,7 @@ class VirtualDJClient():
   
         return result
     #------------------------------------------------------------------------------------
-    async def _get_result_deck(self, deck: str, verb: str) -> str:
+    async def _get_result_deck(self, deck: str, verb: str) -> Optional[str]:
         vdjscript = f"deck {deck} {verb}"
         result = await self.get_async(vdjscript)
         len_result = len(result)
@@ -558,28 +562,30 @@ class VirtualDJClient():
     #------------------------------------------------------------------------------------  
     async def get_DeckSong_async(self, deck: str) -> VdjDeckSong:
         # TODO: check if we can use asyncio.gather() to decrease the latency
-        song = VdjDeckSong()
-        song.Filepath = self.to_str(await self._get_result_deck(deck, "get_filepath"))
-        song.Filesize = self.to_int(await self._get_result_deck(deck, "get_filesize"))
-        song.Artist = self.to_str(await self._get_result_deck(deck, "get_artist"))
+        song = VdjDeckSong() 
         song.Title = self.to_str(await self._get_result_deck(deck, "get_title"))
-        song.Remix = self.to_str(await self._get_result_deck(deck, "get_remix_after_title"))
-        song.Genre = self.to_str(await self._get_result_deck(deck, "get_genre"))
-        song.Album = self.to_str(await self._get_result_deck(deck, "get_album"))
-        year_tmp = self.to_int(await self._get_result_deck(deck, "get_year"))
-        song.Year = None if year_tmp == 0 else year_tmp
-        song.Rating = self.to_int(await self._get_result_deck(deck, "rating"))
-        song.Comment = self.to_str(await self._get_result_deck(deck, "get_comment"))
-        song.Bpm = self.to_float(await self._get_result_deck(deck, "get_bpm absolute"))
-        song.SongLength = self._to_strtime(self._to_milliseconds(await self._get_result_deck(deck, "get_songlength")))
-        song.TimeTotal = self._to_strtime(await self._get_result_deck(deck, "get_time total absolute"))
-        song.HasStems = self.to_bool(await self._get_result_deck(deck, "has_stems"))
-        song.HasLyrics = self.to_bool(await self._get_result_deck(deck, "has_lyrics"))
-        song.HasLinkedTracks = self.to_bool(await self._get_result_deck(deck, "has_linked_tracks"))
-        song.IsVideo = self.to_bool(await self._get_result_deck(deck, "is_video"))
-        song.HasStemsV1 = self.to_bool(await self._get_result_deck(deck, "has_stems '1.0'"))
-        song.HasStemsV2 = self.to_bool(await self._get_result_deck(deck, "has_stems '2.0'"))
-        song.HasCover = self.to_bool(await self._get_result_deck(deck, "has_cover"))
+        song.IsLoaded = self.to_bool(await self._get_result_deck(deck, "loaded"))
+        if song.IsLoaded == True:  # to limit exceptions in log file
+            song.Filepath = self.to_str(await self._get_result_deck(deck, "get_filepath"))
+            song.Filesize = self.to_int(await self._get_result_deck(deck, "get_filesize"))
+            song.Artist = self.to_str(await self._get_result_deck(deck, "get_artist"))
+            song.Remix = self.to_str(await self._get_result_deck(deck, "get_remix_after_title"))
+            song.Genre = self.to_str(await self._get_result_deck(deck, "get_genre"))
+            song.Album = self.to_str(await self._get_result_deck(deck, "get_album"))
+            year_tmp = self.to_int(await self._get_result_deck(deck, "get_year"))
+            song.Year = None if year_tmp == 0 else year_tmp
+            song.Rating = self.to_int(await self._get_result_deck(deck, "rating"))
+            song.Comment = self.to_str(await self._get_result_deck(deck, "get_comment"))
+            song.Bpm = self.to_float(await self._get_result_deck(deck, "get_bpm absolute"))
+            song.SongLength = self._to_strtime(self._to_milliseconds(await self._get_result_deck(deck, "get_songlength")))
+            song.TimeTotal = self._to_strtime(await self._get_result_deck(deck, "get_time total absolute"))
+            song.HasStems = self.to_bool(await self._get_result_deck(deck, "has_stems"))
+            song.HasLyrics = self.to_bool(await self._get_result_deck(deck, "has_lyrics"))
+            song.HasLinkedTracks = self.to_bool(await self._get_result_deck(deck, "has_linked_tracks"))
+            song.IsVideo = self.to_bool(await self._get_result_deck(deck, "is_video"))
+            song.HasStemsV1 = self.to_bool(await self._get_result_deck(deck, "has_stems '1.0'"))
+            song.HasStemsV2 = self.to_bool(await self._get_result_deck(deck, "has_stems '2.0'"))
+            song.HasCover = self.to_bool(await self._get_result_deck(deck, "has_cover"))
         return song
     #------------------------------------------------------------------------------------
     async def get_DeckEngine_async(self, deck: str) -> VdjDeckEngine:
@@ -588,16 +594,8 @@ class VirtualDJClient():
         deckengine.HasError = self.to_str(await self._get_result_deck(deck, "deck_has_error"))
         deckengine.IsPfl = self.to_bool(await self._get_result_deck(deck, "pfl"))
         deckengine.BpmCurrent = self.to_float(await self._get_result_deck(deck, "get_bpm"))
-        deckengine.KeyCurrent = self.to_str(await self._get_result_deck(deck, "get_key 'musical'"))
-        deckengine.KeyCurrentHarmonic = self.to_str(await self._get_result_deck(deck, "get_harmonic"))
         deckengine.Position = self.to_float(await self._get_result_deck(deck, "get_position"))
-        deckengine.Time = self._to_strtime(await self._get_result_deck(deck, "get_time"))
-        deckengine.TimeElapsed = self._to_strtime(await self._get_result_deck(deck, "get_time elapsed absolute"))
-        deckengine.TimeRemaining = self._to_strtime(await self._get_result_deck(deck, "get_time remaining absolute"))
         deckengine.Beat = self.to_float(await self._get_result_deck(deck, "get_beat"))
-        deckengine.Beatgrid = self.to_float(await self._get_result_deck(deck, "get_beatgrid"))
-        deckengine.Beatpos = self.to_float(await self._get_result_deck(deck, "get_beatpos"))
-        deckengine.Firstbeat = self.to_float(await self._get_result_deck(deck, "get_firstbeat"))
         deckengine.Volume = self.to_float(await self._get_result_deck(deck, "volume"))
         deckengine.VolumeTotal = self.to_float(await self._get_result_deck(deck, "get_volume"))
         deckengine.Level = self.to_float(await self._get_result_deck(deck, "get_level"))
@@ -626,6 +624,17 @@ class VirtualDJClient():
         deckengine.Filter = self.to_float(await self._get_result_deck(deck, "filter"))
         deckengine.IsStemsReady = self.to_bool(await self._get_result_deck(deck, "has_stems 'ready'"))
         deckengine.IsMasterDeck = self.to_bool(await self._get_result_deck(deck, "masterdeck"))
+        deckengine.IsLoaded = self.to_bool(await self._get_result_deck(deck, "loaded"))
+        if deckengine.IsLoaded == True:  # to limit exceptions in log file
+            deckengine.KeyCurrent = self.to_str(await self._get_result_deck(deck, "get_key 'musical'"))
+            deckengine.KeyCurrentHarmonic = self.to_str(await self._get_result_deck(deck, "get_harmonic"))
+            deckengine.Time = self._to_strtime(await self._get_result_deck(deck, "get_time"))
+            deckengine.TimeElapsed = self._to_strtime(await self._get_result_deck(deck, "get_time elapsed absolute"))
+            deckengine.TimeRemaining = self._to_strtime(await self._get_result_deck(deck, "get_time remaining absolute"))
+            deckengine.Beatgrid = self.to_float(await self._get_result_deck(deck, "get_beatgrid"))
+            deckengine.Beatpos = self.to_float(await self._get_result_deck(deck, "get_beatpos"))
+            deckengine.Firstbeat = self.to_float(await self._get_result_deck(deck, "get_firstbeat"))
+
         return deckengine
     #------------------------------------------------------------------------------------
     async def get_DeckData_async(self, deck: str) -> VdjDeckData:

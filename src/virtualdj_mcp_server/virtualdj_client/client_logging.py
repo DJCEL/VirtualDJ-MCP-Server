@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------------
-# MCP Server Logging
+# Logging
 #------------------------------------------------------------------------------------
-__version__ = '1.0.5'
+__version__ = '1.0.4'
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -9,18 +9,18 @@ from typing import Literal
 import os
 import sys
 
-from .mcp_server_config import MCP_SERVER_DEBUG, MCP_SERVER_LOG_FOLDER, MCP_SERVER_LOG_FILENAME
+from .client_config import VDJ_CLIENT_DEBUG, VDJ_CLIENT_LOG_FOLDER, VDJ_CLIENT_LOG_FILENAME
 
 #------------------------------------------------------------------------------------------------------------------------------------
-class MCPServerLog:
+class VdjClientLog:
     def __init__(self, controller = None, parent_name: str | None = None, useRichConsole: bool = False):
-        self.filepath = f"{MCP_SERVER_LOG_FOLDER}/{MCP_SERVER_LOG_FILENAME}"
-        if not os.path.exists(MCP_SERVER_LOG_FOLDER):
-            os.makedirs(MCP_SERVER_LOG_FOLDER)
+        self.filepath = f"{VDJ_CLIENT_LOG_FOLDER}/{VDJ_CLIENT_LOG_FILENAME}"
+        if not os.path.exists(VDJ_CLIENT_LOG_FOLDER):
+            os.makedirs(VDJ_CLIENT_LOG_FOLDER)
 
-        self.logger = self.create_log(controller, parent_name, useRichConsole)
+        self.logger = self.create_client_log(controller, parent_name, useRichConsole)
     #------------------------------------------------------------------------------------
-    def create_log(self, controller, parent_name: str | None = None, useRichConsole: bool = False) -> logging.Logger | None:
+    def create_client_log(self, controller, parent_name: str | None = None, useRichConsole: bool = False) -> logging.Logger | None:
         
         if parent_name is None:
             logger = logging.getLogger()
@@ -71,11 +71,11 @@ class MCPServerLog:
             handler.close()
             self.logger.removeHandler(handler)
     #------------------------------------------------------------------------------------
-    def get_log(self) -> logging.Logger:
+    def get_client_log(self) -> logging.Logger:
         return self.logger
     #------------------------------------------------------------------------------------
-    def save_log(self, msg: str, parent_name: str | None = None, level: Literal["DEBUG","INFO","WARNING","ERROR","CRITICAL"] = "INFO") -> None:
-            if MCP_SERVER_DEBUG == False:
+    def save_client_log(self, msg: str, parent_name: str | None = None, level: Literal["DEBUG","INFO","WARNING","ERROR","CRITICAL"] = "INFO") -> None:
+            if VDJ_CLIENT_DEBUG == False:
                 return None
 
             if parent_name is None:
@@ -94,7 +94,8 @@ class MCPServerLog:
                 logger.error(msg)
             elif level == "CRITICAL":
                 logger.critical(msg)
+
     #------------------------------------------------------------------------------------
-    def close_logs() -> None:
+    def close_client_logs() -> None:
          self.logger.shutdown()
          logging.shutdown()

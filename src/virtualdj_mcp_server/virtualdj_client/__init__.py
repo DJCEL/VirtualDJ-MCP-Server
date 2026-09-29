@@ -1,12 +1,14 @@
-__version__ = "1.1.10"
+__version__ = "1.1.11"
 
 from .client import VirtualDJClient, VdjResponse, VdjDeck, VdjDeckSong, VdjDeckEngine, VdjDeckData, VdjMixer, VdjBrowser, VdjBrowserFolder, VdjBrowserFile, VdjAutomix, VdjVideo
+from .client_logging import VdjClientLog
 from .client_utils import VirtualDJUtils
 from .client_settings import VirtualDJSettings
-from .client_songs_database import VirtualDJSongsDatabase
+from .client_songs_database import VirtualDJSongsDatabase, VdjSong, VdjWaveform
 from .client_history_files import VirtualDJHistoryFiles
 
 from .client import __version__ as __client_version__
+from .client_logging import __version__ as __client_logging_version__
 from .client_utils import __version__ as __client_utils_version__
 from .client_settings import __version__ as __client_settings_version__
 from .client_songs_database import __version__ as __client_songs_database_version__
@@ -26,11 +28,15 @@ __all__ = [
     "VdjBrowser",
     "VdjAutomix",
     "VdjVideo",
+    "VdjClientLog",
     "VirtualDJUtils", 
     "VirtualDJSettings",
     "VirtualDJSongsDatabase",
+    "VdjSong",
+    "VdjWaveform",
     "VirtualDJHistoryFiles",
     "__client_version__",
+    "__client_logging_version__",
     "__client_utils_version__",
     "__client_songs_database_version__",
     "__client_history_files_version__",

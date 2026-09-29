@@ -1,15 +1,17 @@
 #------------------------------------------------------------------------------------
 # VirtualDJ settings
 #------------------------------------------------------------------------------------
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
 from datetime import datetime
 
 from .client_utils import VirtualDJUtils
+from .client_logging import VdjClientLog
 from .client_config import VDJ_XML_SETTINGS
 
 #------------------------------------------------------------------------------------
@@ -350,6 +352,81 @@ class VdjSettingsSampler:
     shoutoutVoice: Optional[str] = None
     shoutoutOver: Optional[str] = None
 #------------------------------------------------------------------------------------
+class VdjBrowserSections(str, Enum):
+    ONLINEMUSIC_SPOTIFY = "file(spot)"
+    VIRTUAL_FOLDER = "file(virt)"
+    LOCALMUSIC_SAMPLER = "file(samp)"
+    LOCALMUSIC_SAMPLER_BANK = "file(sbnk)"
+    IDEAS_HISTORY = "file(hist)"
+    IDEAS_ASK_THE_DJ = "file(ask)"
+    IDEAS_AI_PROMPT = "file(ai)"
+    M3U_PLAYLISTS = "file(play)"
+    FILES = "file"
+    SIDEVIEW_SIDELIST = "side"
+    SIDEVIEW_REMIXES = "side(rmix)"
+    SIDEVIEW_SAMPLER_BANK = "side(sbnk)"
+    SIDEVIEW_AUTOMIX = "side(auto)"
+    SIDEVIEW_KARAOKE = "side(kara)"
+#------------------------------------------------------------------------------------
+class VdjBrowserColumns(str, Enum):
+    ALBUM_ART = "alba"
+    TITLE = "titl"
+    TITLE_REMIX = "tirm"
+    ARTIST = "arti"
+    REMIX = "mix"
+    ALBUM = "albu"
+    COMPOSER = "comp"
+    COMMENT ="comm"
+    GENRE = "genr"
+    LENGTH = "leng"
+    BPM = "bpm"
+    KEY = "key"
+    LABEL ="labl"
+    REMIXER = "remi"
+    GROUPING = "grou"
+    TRACK = "trck"
+    BPM_DIFFERENCE = "dbpm"
+    KEY_DIFFERENCE = "dkey"
+    BITRATE = "bitr"
+    YEAR = "year"
+    PLAY_COUNT = "play"
+    FIRST_SEEN = "1see"
+    FIRST_PLAY = "1pla"
+    LAST_PLAY = "Xply"
+    DRIVE = "driv"
+    FILEPATH = "path"
+    FILE_NAME = "file"
+    FILE_TYPE = "ext"
+    FILE_SIZE = "size"
+    FILE_DATE = "date"
+    USER_1 = "usr1"
+    USER_2 = "usr2"
+    RATING = "star"
+    IN_SEARCHDB = "indb"
+    EXISTS = "exis"
+    HAS_LYRICS = "lyri"
+    LOADED_ON = "load"
+    TYPE = "type"
+    COLOR = "colo"
+    PLAY_TIME = "plti"
+    WILL_PLAY_AT = "plat"
+    SINGER = "sing"
+    POSITION = "lpos"
+    ORDER = "ord"
+    FUILD = "flui"
+    WAVEFORM = "wave"
+    PROVIDER = "prov"
+    SAMPLER_PLAY = "spla"
+    SAMPLER_POS = "spos"
+    SAMPLER_GROUP = "sgrp"
+    SAMPLER_VOLUME = "svol"
+    SAMPLER_MODE = "smod"
+    SAMPLER_LENGTH = "slen"
+    SAMPLER_EDIT = "sedi"
+    ASKTHEDJ_MESSAGE = "msg"
+    ASKTHEDJ_FROM = "from"
+    ASKTHEDJ_WHEN = "askd"
+#------------------------------------------------------------------------------------
 @dataclass
 class VdjSettingsBrowser:
     fileFormats: Optional[str] = None
@@ -374,8 +451,8 @@ class VdjSettingsBrowser:
     showVideo: Optional[str] = None
     showKaraoke: Optional[str] = None
     searchFields: Optional[str] = None
-    browserColumns: Optional[str] = None
-    browserSort: Optional[str] = None
+    browserColumns: Optional[str] = None   # a list (delimited by | ) of VdjBrowserSections. Each VdjBrowserSection is a list (delimited by , ) of VdjBrowserColumns with the column width in parameter
+    browserSort: Optional[str] = None      # a list (delimited by | ) of VdjBrowserSections
     browserGridColumns: Optional[str] = None
     infoviewColumns: Optional[str] = None
     showHorizontalSideList: Optional[str] = None
@@ -743,8 +820,9 @@ class VdjSettings:
     skin: Optional[VdjSettingsSkin] = None
 #------------------------------------------------------------------------------------------------------------------------------------
 class VirtualDJSettings():
-    def __init__(self):
-        self.vdj_utils = VirtualDJUtils()
+    def __init__(self,  controller = None):
+        self.vdj_utils = VirtualDJUtils(controller)
+        self.vdj_client_log = VdjClientLog(controller,__name__)
         self.SETTINGS_FILENAME = VDJ_XML_SETTINGS
     #------------------------------------------------------------------------------------
     def get_local_settings_path_list(self) -> list[Path]:
@@ -788,20 +866,17 @@ class VirtualDJSettings():
         try:
             tree = ET.parse(settings_path)
         except ET.ParseError as exc:
-            print(f"VirtualDJ settings reading {settings_path} => Invalid XML file")
-            self.vdj_utils.save_client_log(f"VirtualDJ database reading {settings_path} => Invalid XML file")
+            self.vdj_client_log.save_client_log(msg=f"VirtualDJ database reading {settings_path} => Invalid XML file", parent_name=__name__, level="ERROR")
             return None
         except OSError as exc:
-            print(f"VirtualDJ settings reading {settings_path} => Cannot read the file")
-            self.vdj_utils.save_client_log(f"VirtualDJ settings reading {settings_path} => Cannot read the file")
+            self.vdj_client_log.save_client_log(msg=f"VirtualDJ settings reading {settings_path} => Cannot read the file", parent_name=__name__, level="ERROR")
             return None
 
         root = tree.getroot()
         root_tag = root.tag
         root_attrib = root.attrib
         if root_tag != "settings":
-            print(f"VirtualDJ settings reading {settings_path} => Not a VirtualDJ settings file")
-            self.vdj_utils.save_client_log(f"VirtualDJ settings reading {settings_path} => Not a VirtualDJ settings file")
+            self.vdj_client_log.save_client_log(msg=f"VirtualDJ settings reading {settings_path} => Not a VirtualDJ settings file", parent_name=__name__, level="ERROR")
             return None
 
 
@@ -863,7 +938,13 @@ class VirtualDJSettings():
                 elif child_tag == "sampler":
                     a = 0
                 elif child_tag == "browser":
-                    a = 0
+                    if subchild_tag == "lastSelectedFolder":
+                        settings.browser.lastSelectedBrowser = subchild_text
+                    elif subchild_tag == "browserColumns":
+                        settings.browser.browserColumns = subchild_text
+                    elif subchild_tag == "browserSort":
+                        settings.browser.browserSort = subchild_text
+
                 elif child_tag == "tags":
                     a = 0
                 elif child_tag == "automix":
@@ -905,7 +986,6 @@ class VirtualDJSettings():
                     if subchild_tag == "skinStarterTip":
                         settings.skin.skinStarterTip = self._to_int(subchild_text)
                 else:
-                    print(f"child_tag < {child_tag} > not defined")
-                    self.vdj_utils.save_client_log(f"child_tag < {child_tag} > not defined")
+                    self.vdj_client_log.save_client_log(msg=f"child_tag < {child_tag} > not defined", parent_name=__name__, level="ERROR")
             
         return settings

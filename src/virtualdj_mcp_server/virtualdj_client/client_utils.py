@@ -2,51 +2,24 @@
 # VirtualDJ - Folders structure
 #------------------------------------------------------------------------------------
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 import os
 import platform
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Literal
 import psutil
 import subprocess
 import logging
 
-from .client_config import VDJ_CLIENT_DEBUG, VDJ_PROCESS_NAME, VDJ_PROCESS_PATH_WINDOWS, VDJ_PROCESS_PATH_MAC
+from .client_config import VDJ_PROCESS_NAME, VDJ_PROCESS_PATH_WINDOWS, VDJ_PROCESS_PATH_MAC
+from .client_logging import VdjClientLog
 
 #------------------------------------------------------------------------------------------------------------------------------------
 class VirtualDJUtils:
-    def __init__(self):
-        self.LOG_FOLDER = './log'
-        self.LOG_FILENAME = 'client.log'
-        self.logger = logging.getLogger(__name__)
-
-        self._create_client_log()
-    #------------------------------------------------------------------------------------
-    def _create_client_log(self):
-        if VDJ_CLIENT_DEBUG:
-            filepath = f"{self.LOG_FOLDER}/{self.LOG_FILENAME}"
-            if not os.path.exists(self.LOG_FOLDER):
-                os.makedirs(self.LOG_FOLDER)
-            
-            """
-            FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            file_handler = logging.FileHander(filename=filepath)
-            file_handler.setLevel(logging.INFO)
-            formatter = logging.Formatter(FORMAT)
-            file_handler.setFormatter(formatter)
-            logging.addHandler(file_handler)
-            """
-
-            logging.basicConfig(filename=filepath, level=logging.INFO)
-    #------------------------------------------------------------------------------------
-    def save_client_log(self, msg):
-        if VDJ_CLIENT_DEBUG:
-            self.logger.info(msg)
-    #------------------------------------------------------------------------------------
-    @staticmethod
-    def close_client_log():
-        logging.shutdown()
+    def __init__(self, controller = None):
+        self.vdj_client_log = VdjClientLog(controller,__name__)
+        self.VIRTUALDJ_FOLDER = "VirtualDJ"
     #------------------------------------------------------------------------------------
     def get_virtualdj_home_list(self) -> list[Path]:
         system = platform.system()
@@ -67,7 +40,7 @@ class VirtualDJUtils:
 
         vdj_home_list: list[Path] = []
         for main_folder in main_folder_list:
-            vdj_home = Path(main_folder) / "VirtualDJ"
+            vdj_home = Path(main_folder) / self.VIRTUALDJ_FOLDER
             if vdj_home.exists():
                 vdj_home_list.append(vdj_home)
 
@@ -84,7 +57,7 @@ class VirtualDJUtils:
         
         vdj_home_ext_list: list[Path] = []
         for drive in drives:
-            vdj_home_ext = Path(drive) / "VirtualDJ"
+            vdj_home_ext = Path(drive) / self.VIRTUALDJ_FOLDER
             if vdj_home_ext.exists():
                 vdj_home_ext_list.append(vdj_home_ext)
 
@@ -137,13 +110,11 @@ class VirtualDJUtils:
 
             subprocess.Popen([app_path], **popen_kwargs)
         except FileNotFoundError:
-            print(f"VirtualDJ not found: {app_path}")
-            self.save_client_log(f"VirtualDJ not found: {app_path}")
+            self.vdj_client_log.save_client_log(f"VirtualDJ not found: {app_path}",__name__)
             return False
         except Exception as e:
             msg =  app_path + "\n" + str(e)
-            print(msg)
-            self.save_client_log(msg)
+            self.vdj_client_log.save_client_log(msg,__name__)
             return False
 
         return True

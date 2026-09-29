@@ -34,9 +34,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\main.py" />
+    <Compile Include="src\virtualdj_mcp_server\mcp_server_logging.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_config.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_history_files.py" />
+    <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_logging.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_settings.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_songs_database.py" />
     <Compile Include="src\virtualdj_mcp_server\virtualdj_client\client_utils.py" />
