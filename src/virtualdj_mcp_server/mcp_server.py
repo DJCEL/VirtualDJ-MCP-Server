@@ -104,7 +104,7 @@ class VirtualDJMCPServer:
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
             return result
         except Exception as e:
-            strMsgLog = f"Error in is_virtualdj_running: {e}"
+            strMsgLog = f"Error in is_virtualdj_running(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
     #------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ class VirtualDJMCPServer:
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
             return result
         except Exception as e:
-            strMsgLog = f"Error in is_virtualdj_running: {e}"
+            strMsgLog = f"Error in launch_virtualdj(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
     #------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ class VirtualDJMCPServer:
                 self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
                 return result
         except Exception as e:
-            strMsgLog = f"Error in send_vdjscript: {e}"
+            strMsgLog = f"Error in send_vdjscript(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
     #------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ class VirtualDJMCPServer:
                 self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
                 return result
         except Exception as e:
-            strMsgLog = f"Error in get_vdjscript: {e}"
+            strMsgLog = f"Error in get_vdjscript(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return "error in get_vdjscript"
     #------------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ class VirtualDJMCPServer:
                 self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
                 return result
         except Exception as e:
-            strMsgLog = f"Error in play: {e}"
+            strMsgLog = f"Error in play(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
     #------------------------------------------------------------------------------------
@@ -220,6 +220,6 @@ class VirtualDJMCPServer:
                 self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
                 return result
         except Exception as e:
-            strMsgLog = f"Error in set_crossfader: {e}"
+            strMsgLog = f"Error in set_crossfader(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
