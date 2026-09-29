@@ -1,15 +1,12 @@
 {
-  "mcpServers":
-  {
-    "virtualdj-mcp-server":
-    {
-	  "type": "stdio",
+  "servers": {
+    "virtualdj-mcp-server": {
+	    "type": "stdio",
       "command": "uv",
-      "args":
-      [
+      "args": [
+        "run",
         "--directory",
-		"D:\\GitHub\\VirtualDJ-MCP-Server\\src",
-		"run",
+        "D:\\GitHub\\VirtualDJ-MCP-Server\\src",
         "main.py"
       ]
     }
