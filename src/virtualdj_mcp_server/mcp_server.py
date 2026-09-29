@@ -84,6 +84,7 @@ class VirtualDJMCPServer:
 #------------------------------------------------------------------------------------
     def _register_tools(self, mcp: FastMCP):
        mcp.add_tool(self.is_virtualdj_running)
+       mcp.add_tool(self.launch_virtualdj)
        mcp.add_tool(self.send_vdjscript)
        mcp.add_tool(self.get_vdjscript)
        mcp.add_tool(self.play)
@@ -100,6 +101,24 @@ class VirtualDJMCPServer:
         try:
             result = self.vdj_client.is_app_running()
             strMsgLog = f"vdj_client.is_app_running() => {result}"
+            self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
+            return result
+        except Exception as e:
+            strMsgLog = f"Error in is_virtualdj_running: {e}"
+            self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return False
+    #------------------------------------------------------------------------------------
+    @tool
+    def launch_virtualdj(self) -> bool:
+        """
+        This tool enables to launch VirtualDJ if it is closed
+         
+        Returns:
+            True if VirtualDJ is opening, False otherwise
+        """
+        try:
+            result = self.vdj_client.open_app()
+            strMsgLog = f"vdj_client.open_app() => {result}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
             return result
         except Exception as e:
