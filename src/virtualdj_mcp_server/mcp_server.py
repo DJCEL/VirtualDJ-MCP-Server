@@ -104,11 +104,13 @@ class VirtualDJMCPServer:
         try:
             async with self.vdj_client:
                 result = await self.vdj_client.send_async(vdjscript)
-                self.mcp_log.save_log(msg=f"vdj_client.send_async({vdjscript}) => {result}", parent_name=__name__, level="INFO")
+                strMsgLog = f"vdj_client.send_async({vdjscript}) => {result}"
+                self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
                 return result
         except Exception as e:
-            self.mcp_log.save_log(msg=f"Error in send_vdjscript: {e}", parent_name=__name__, level="ERROR")
-            raise
+            strMsgLog = f"Error in send_vdjscript: {e}"
+            self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return False
     #------------------------------------------------------------------------------------
     @tool
     async def get_vdjscript(self, vdjscript: str) -> str:
@@ -131,13 +133,18 @@ class VirtualDJMCPServer:
         except Exception as e:
             strMsgLog = f"Error in get_vdjscript: {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return "error in get_vdjscript"
     #------------------------------------------------------------------------------------
     @tool
     async def play(self, deck_ref: str) -> bool:
         """
         This tool plays a song on a defined deck
+
         Args:
           deck_ref: the deck to use (left, right, ...)
+
+        Returns:
+            True if the song is playing, False otherwise
         """
         vdjscript = f"deck {deck_ref} play"
         try:
@@ -149,16 +156,24 @@ class VirtualDJMCPServer:
         except Exception as e:
             strMsgLog = f"Error in play: {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return False
     #------------------------------------------------------------------------------------
     @tool
     async def set_crossfader(self, position: float) -> bool:
         """
         This tool sets the crossfader in VirtualDJ at a certain position (between 0 and 100)
+
+        Args:
+            position: the position of the crossfader (between 0 and 100)
+
+        Returns:
+            True if the crossfader position was updated, False otherwise
         """
         if not 0.0 <= position <= 100.0:
             strMsgLog = "Crossfader position must be between 0 and 100"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
+
         vdjscript = f"crossfader {position}%"
 
         try:
@@ -170,3 +185,4 @@ class VirtualDJMCPServer:
         except Exception as e:
             strMsgLog = f"Error in set_crossfader: {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return False

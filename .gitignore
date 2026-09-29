@@ -4,7 +4,6 @@
 /.vs/
 /.venv/
 /src/virtualdj_mcp_server.egg-info/
-uv.lock
 
 ##########
 # Python #
