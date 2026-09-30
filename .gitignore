@@ -4,6 +4,7 @@
 /.vs/
 /.venv/
 /src/virtualdj_mcp_server.egg-info/
+/src/NVIDIA Corporation/
 
 ##########
 # Python #

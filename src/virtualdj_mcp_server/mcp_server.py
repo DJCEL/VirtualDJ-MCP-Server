@@ -90,6 +90,7 @@ class VirtualDJMCPServer:
        mcp.add_tool(self.get_vdjscript)
        mcp.add_tool(self.play)
        mcp.add_tool(self.set_crossfader)
+       mcp.add_tool(self.load_song)
     #------------------------------------------------------------------------------------
     @tool
     def is_virtualdj_running(self) -> bool:
