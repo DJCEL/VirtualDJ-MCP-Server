@@ -54,7 +54,7 @@ class VirtualDJMCPServer:
         If used with async, replace self.mcp.run() by self.mcp.run_async()
         It is possible to add stateless_http=True in run()
         """
-        strMsgLog = f"VirtualDJ-MCP-Server {__version__} starting..."
+        strMsgLog = f"VirtualDJ-MCP-Server v{__version__} starting..."
         self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
  
         try:
