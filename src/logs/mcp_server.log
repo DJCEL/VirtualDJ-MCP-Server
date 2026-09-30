@@ -12,3 +12,4 @@
 2026/09/29 23:53:15 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server starting...
 2026/09/29 23:53:20 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.open_app() => True
 2026/09/29 23:53:31 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.is_app_running() => True
+2026/09/29 23:55:13 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP MCP Server stopped
