@@ -233,7 +233,7 @@ class VirtualDJMCPServer:
 
         Args:
           deck_ref: the deck to use (left, right, ...)
-          filepath: the path of the song (you may use the VirtualDJSongsDatabase class to access the songs database of VirtualDJ). You can use \\ or \\\ on Windows.
+          filepath: the path of the song (you may use the VirtualDJSongsDatabase class to access the songs database of VirtualDJ). You can use \\ or \\\\ on Windows.
 
         Returns:
             True if the song is loaded, False otherwise
