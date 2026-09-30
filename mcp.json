@@ -1,7 +1,7 @@
 {
   "servers": {
     "virtualdj-mcp-server": {
-	    "type": "stdio",
+      "type": "stdio",
       "command": "uv",
       "args": [
         "run",
