@@ -224,3 +224,27 @@ class VirtualDJMCPServer:
             strMsgLog = f"Error in set_crossfader(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
+    #------------------------------------------------------------------------------------
+    @tool
+    async def load_song(self, deck_ref: str, filepath: str) -> bool:
+        """
+        This tool load a song on a defined deck
+
+        Args:
+          deck_ref: the deck to use (left, right, ...)
+          filepath: the path of the song (you may use the VirtualDJSongsDatabase class to access the songs database of VirtualDJ). Use \\ on Windows.
+
+        Returns:
+            True if the song is loaded, False otherwise
+        """
+        vdjscript = f"deck {deck_ref} load '{filepath}'"
+        try:
+            async with self.vdj_client:
+                result = await self.vdj_client.send_async(vdjscript)
+                strMsgLog = f"vdj_client.send_async({vdjscript}) => {result}"
+                self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
+                return result
+        except Exception as e:
+            strMsgLog = f"Error in load_song(): {e}"
+            self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
+            return False
