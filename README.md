@@ -1,2 +1,4 @@
+![logo](https://github.com/djcel/VirtualDJ-MCP-Server/blob/main/schema.png?raw=true "")
+
 # VirtualDJ-MCP-Server
 MCP server for VirtualDJ software
