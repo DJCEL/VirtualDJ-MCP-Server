@@ -84,8 +84,8 @@ class VirtualDJMCPServer:
     
 #------------------------------------------------------------------------------------
     def _register_tools(self, mcp: FastMCP):
-       mcp.add_tool(self.is_virtualdj_running)
-       mcp.add_tool(self.launch_virtualdj)
+       mcp.add_tool(self.is_VirtualDJ_running)
+       mcp.add_tool(self.launch_VirtualDJ)
        mcp.add_tool(self.send_vdjscript)
        mcp.add_tool(self.get_vdjscript)
        mcp.add_tool(self.play)
@@ -93,7 +93,7 @@ class VirtualDJMCPServer:
        mcp.add_tool(self.load_song)
     #------------------------------------------------------------------------------------
     @tool
-    def is_virtualdj_running(self) -> bool:
+    def is_VirtualDJ_running(self) -> bool:
         """
         This tool enables to know if VirtualDJ is running
          
@@ -106,12 +106,12 @@ class VirtualDJMCPServer:
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
             return result
         except Exception as e:
-            strMsgLog = f"Error in is_virtualdj_running(): {e}"
+            strMsgLog = f"Error in is_VirtualDJ_running(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
     #------------------------------------------------------------------------------------
     @tool
-    def launch_virtualdj(self) -> bool:
+    def launch_VirtualDJ(self) -> bool:
         """
         This tool enables to launch VirtualDJ if it is closed
          
@@ -124,7 +124,7 @@ class VirtualDJMCPServer:
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
             return result
         except Exception as e:
-            strMsgLog = f"Error in launch_virtualdj(): {e}"
+            strMsgLog = f"Error in launch_VirtualDJ(): {e}"
             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="ERROR")
             return False
     #------------------------------------------------------------------------------------
@@ -229,11 +229,11 @@ class VirtualDJMCPServer:
     @tool
     async def load_song(self, deck_ref: str, filepath: str) -> bool:
         """
-        This tool load a song on a defined deck
+        This tool loads a song on a defined deck
 
         Args:
           deck_ref: the deck to use (left, right, ...)
-          filepath: the path of the song (you may use the VirtualDJSongsDatabase class to access the songs database of VirtualDJ). Use \\ on Windows.
+          filepath: the path of the song (you may use the VirtualDJSongsDatabase class to access the songs database of VirtualDJ). You can use \\ or \\\ on Windows.
 
         Returns:
             True if the song is loaded, False otherwise

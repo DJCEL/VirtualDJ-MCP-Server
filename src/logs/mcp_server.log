@@ -13,3 +13,14 @@
 2026/09/29 23:53:20 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.open_app() => True
 2026/09/29 23:53:31 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.is_app_running() => True
 2026/09/29 23:55:13 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP MCP Server stopped
+2026/09/30 22:06:47 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server v1.0.13 starting...
+2026/09/30 22:09:15 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP MCP Server stopped
+2026/09/30 22:09:21 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server v1.0.13 starting...
+2026/09/30 22:13:36 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left load 'D:\\Musiaue (main)\\Downloads\\New Order - Blue Monday (Dj Raffaele Giusti Rework).mp3') => True
+2026/09/30 22:15:17 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left load 'D:\Musiaue (main)\Downloads\New Order - Blue Monday (Dj Raffaele Giusti Rework).mp3') => True
+2026/09/30 22:15:32 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left load 'D:\Musiaue (main)\Downloads\New Order - Blue Monday (Dj Raffaele Giusti Rework).mp3') => True
+2026/09/30 22:16:02 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left load 'D:\Musique (main)\Downloads\New Order - Blue Monday (Dj Raffaele Giusti Rework).mp3') => True
+2026/09/30 22:16:24 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left load 'D:\\Musique (main)\\Downloads\\New Order - Blue Monday (Dj Raffaele Giusti Rework).mp3') => True
+2026/09/30 22:17:16 - INFO - [virtualdj_mcp_server.mcp_server] vdj_client.send_async(deck left play) => True
+2026/09/30 22:18:30 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP MCP Server stopped
+2026/09/30 22:19:06 - INFO - [virtualdj_mcp_server.mcp_server] VirtualDJ-MCP-Server v1.0.13 starting...
