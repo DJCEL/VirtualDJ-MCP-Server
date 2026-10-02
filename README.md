@@ -2,3 +2,4 @@
 
 # VirtualDJ-MCP-Server
 MCP server for VirtualDJ software
+Use "mcp.json"
