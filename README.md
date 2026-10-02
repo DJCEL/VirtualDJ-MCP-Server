@@ -8,4 +8,4 @@ The mcp.json file uses "uv" (fast Python package and project manager that replac
 If you want to change the type ("stdio" for local/Claude or "http" for remote), you also need to update "MCP_SERVER_TRANSPORT" in the mcp_server_config.py file
 
 
-You can test/debug the MCP server with MCP Inspector.
+You can test/debug the MCP server with "MCP Inspector".
