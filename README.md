@@ -3,4 +3,4 @@
 # VirtualDJ-MCP-Server
 MCP server for VirtualDJ software
 
-Use "mcp.json"
+Use "mcp.json" (after updating the directory)
