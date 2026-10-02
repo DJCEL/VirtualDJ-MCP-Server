@@ -71,7 +71,8 @@ class VirtualDJMCPServer:
         except Exception as e:
              self.mcp_log.save_log(msg=f"MCP Server error: {e}", parent_name=__name__, level="ERROR")
         finally:
-             self.mcp_log.save_log(msg="VirtualDJ-MCP MCP Server stopped", parent_name=__name__, level="INFO")
+             strMsgLog = "VirtualDJ-MCP-Server stopped"
+             self.mcp_log.save_log(msg=strMsgLog, parent_name=__name__, level="INFO")
     #------------------------------------------------------------------------------------
     def _register_routes(self, mcp: FastMCP):
         """
