@@ -3,4 +3,4 @@
 # VirtualDJ-MCP-Server
 MCP server for VirtualDJ software
 
-Use "mcp.json" (after updating the directory). It uses "uv" (Python package and project manager)
+Use "mcp.json" (after updating the directory). The mcp.json file uses "uv" (Python package and project manager)
