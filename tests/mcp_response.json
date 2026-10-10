@@ -1,0 +1,150 @@
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "tools": [
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": [
+            ]
+          }
+        },
+        "description": "This tool sends a command to VirtualDJ via a vdjscript.\nIt enables VirtualDJ to do an action defined by the vdjscript.",
+        "inputSchema": {
+          "properties": {
+            "vdjscript": {
+              "type": "string",
+              "description": "the vdjscript to use"
+            }
+          },
+          "required": [
+            "vdjscript"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "send_vdjscript",
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "type": "object",
+          "x-fastmcp-wrap-result": true
+        },
+        "title": "Send Vdjscript"
+      },
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": [
+            ]
+          }
+        },
+        "description": "This tool queries VirtualDJ via a vdjscript.\nIt enables to get and extract data from VirtualDJ.",
+        "inputSchema": {
+          "properties": {
+            "vdjscript": {
+              "type": "string",
+              "description": "the vdjscript to use"
+            }
+          },
+          "required": [
+            "vdjscript"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "get_vdjscript",
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "type": "object",
+          "x-fastmcp-wrap-result": true
+        },
+        "title": "Get Vdjscript"
+      },
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": [
+            ]
+          }
+        },
+        "description": "This tool plays a song on a defined deck\nArgs:\n  deck_ref: the deck to use (left, right, ...)",
+        "inputSchema": {
+          "properties": {
+            "deck_ref": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "deck_ref"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "play",
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "type": "object",
+          "x-fastmcp-wrap-result": true
+        },
+        "title": "Play"
+      },
+      {
+        "_meta": {
+          "fastmcp": {
+            "tags": [
+            ]
+          }
+        },
+        "description": "This tool sets the crossfader in VirtualDJ at a certain position (between 0 and 100)",
+        "inputSchema": {
+          "properties": {
+            "position": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "position"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "name": "set_crossfader",
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "type": "object",
+          "x-fastmcp-wrap-result": true
+        },
+        "title": "Set Crossfader"
+      }
+    ]
+  }
+}
